@@ -42,6 +42,6 @@ for r in s.itertuples():
     conf="NJ withholds names (Daniel's Law)"+(" - buyer mailing address from tax roll" if mail else "")+("" if not approx else " - location approximate")
     nuflag=" Non-usable sale code "+r.nu+"." if r.nu and r.nu!="00" else ""
     units=int(r.DWELL) if pd.notna(r.DWELL) and r.DWELL>0 and same_sale else None
-    rows.append([r.dt.strftime("%Y-%m-%d"),cty+" County",mun,str(r.addr or "").title() or "Address not listed",a,r.pc,units,None,int(r.price),1+sum(1 for x in [r.etc] if x=="X"),round(float(lat),5),round(float(lng),5),"",owner[:150],conf+nuflag,"",mail[:120],"","",int(r.yb) if r.yb.isdigit() and int(r.yb)>1600 else None,"",int(float(r.CALC_ACRE)*43560) if pd.notna(r.CALC_ACRE) and r.CALC_ACRE>0 else None,"",r.pins[0].split("_")[0]+"/"+"/".join(r.pins[0].split("_")[1:3]),"","","","NJ"])
+    rows.append([r.dt.strftime("%Y-%m-%d"),cty+" County",mun,str(r.addr or "").title() or "Address not listed",a,r.pc,units,None,int(r.price),1+sum(1 for x in [r.etc] if x=="X"),round(float(lat),5),round(float(lng),5),"",owner[:150],conf+nuflag,"",mail[:120],"","",int(r.yb) if r.yb.isdigit() and int(r.yb)>1600 else None,"",int(float(r.CALC_ACRE)*43560) if pd.notna(r.CALC_ACRE) and r.CALC_ACRE>0 else None,r.pins[0].split("_")[0]+"/"+"/".join(r.pins[0].split("_")[1:3]),"","","","NJ"])
 json.dump(rows,open("rows.json","w"),separators=(",",":"))
 import collections; print(len(rows), collections.Counter(x[4] for x in rows).most_common(), "with mailing addr:",sum(1 for x in rows if x[16]))
