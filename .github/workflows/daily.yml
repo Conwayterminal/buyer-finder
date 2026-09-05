@@ -20,11 +20,12 @@ jobs:
         run: |
           python3 pincus.py 1 || true
           python3 update.py --days 45 || true
+          python3 dob_step.py 1200 || true
       - name: Save data
         run: |
           git config user.name "buyer-finder-bot"
           git config user.email "bot@conwaypropertyadvisors.com"
-          git add data.json site/index.html
+          git add data.json site/index.html site/data dob_state.json nyc_bbls.json
           git commit -m "Daily refresh $(date -u +%F)" && git push || echo "no changes"
       - name: Publish site
         run: |
