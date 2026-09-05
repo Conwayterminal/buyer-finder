@@ -31,12 +31,18 @@ def geocode_batch(items):
                 if len(p)>=6 and p[2]=="Match": lon,lat=p[5].split(","); geo[p[0]]=[round(float(lat),5),round(float(lon),5)]
             return
         except Exception as e: print("geo err",e,flush=True); time.sleep(10)
-all_props={}; deals=[]
+all_props={}; deals=[]; processed=set()
 D=json.load(open("data.json")); ncols=len(D["cols"])
 for f in files:
-    name=f["Name"]; m=re.match(r"(.+?) (\d+) ",name)
+    name=f["Name"]; m=re.match(r"(.+?)(?: \d+)? Preliminary",name)
     if not m: continue
-    county=m.group(1); url="https://floridarevenue.com"+urllib.parse.quote(f["ServerRelativeUrl"])
+    county=m.group(1).strip()
+    if os.path.exists(f"site/props/FL_{county.replace(' ','_')}.json") and os.environ.get("FL_FORCE")!="1":
+        # already built this cycle; reuse its deals for the market file
+        for p in json.load(open(f"site/props/FL_{county.replace(' ','_')}.json")):
+            pass
+        print("skip (exists)",county,flush=True); continue
+    url="https://floridarevenue.com"+urllib.parse.quote(f["ServerRelativeUrl"])
     try: z=zipfile.ZipFile(io.BytesIO(requests.get(url,headers={"User-Agent":"Mozilla/5.0"},timeout=600).content))
     except Exception as e: print("skip",name,e,flush=True); continue
     csvn=[n for n in z.namelist() if n.lower().endswith(".csv")][0]
@@ -85,8 +91,12 @@ for f in files:
         if isinstance(o,list): return [clean(v) for v in o]
         return o
     P=clean(P); deals[:]=clean(deals)
-    json.dump(P,open(f"site/props/FL_{county.replace(' ','_')}.json","w"),separators=(",",":"),allow_nan=False)
+    json.dump(P,open(f"site/props/FL_{county.replace(' ','_')}.json","w"),separators=(",",":"),allow_nan=False); processed.add(county+" County")
     print(county,"parcels",len(P),"deals total",len(deals),flush=True)
+try:
+    old=json.load(open("site/data/FL.json"))["rows"]; ci=D["cols"].index("boro")
+    deals=[r for r in old if r[ci] not in processed]+deals
+except Exception: pass
 json.dump({"cols":D["cols"],"rows":deals,"pulled":D.get("pulled")},open("site/data/FL.json","w"),separators=(",",":"))
 json.dump(sorted({(p["county"],) for f in glob.glob("site/props/FL_*.json") for p in json.load(open(f))}),open("site/props/FL_counties.json","w"))
 print("FL deals since 2020 (any price)",len(deals),flush=True)
