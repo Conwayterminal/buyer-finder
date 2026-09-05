@@ -1,0 +1,35 @@
+name: Daily refresh
+on:
+  schedule:
+    - cron: '0 10 * * *'   # 6:00 am ET every day
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency: { group: pages, cancel-in-progress: false }
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install requests pandas numpy
+      - name: Pull today's sales (PincusCo) and city records (ACRIS/PLUTO/HPD)
+        run: |
+          python3 pincus.py 1 || true
+          python3 update.py --days 45 || true
+      - name: Commit data
+        run: |
+          git config user.name "buyer-finder-bot"; git config user.email "bot@conwaypropertyadvisors.com"
+          git add data.json site/index.html && (git commit -m "Daily refresh $(date -u +%F)" && git push) || echo "no changes"
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: site }
+  deploy:
+    needs: refresh
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: ${{ steps.deployment.outputs.page_url }} }
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Conway Buyer Finder</title>
+<style>
+:root{--ink:#1b2430;--slate:#5a6675;--line:#dfe3e8;--paper:#f5f6f8;--card:#fff;--green:#0f6e56;--green-soft:#e3f2ec;--amber:#b7791f;--amber-soft:#fbf0d9;--red:#b03a2e;--red-soft:#f9e3e0;--blue:#1e4fb5;--blue-soft:#e4ebfa}
+*{box-sizing:border-box}body{margin:0;font-family:"Avenir Next","Segoe UI",Helvetica,Arial,sans-serif;color:var(--ink);background:var(--paper);font-size:14px;line-height:1.45}
+a{color:var(--blue)}button{font:inherit;cursor:pointer}input,select{font:inherit;color:var(--ink)}
+header{background:var(--ink);color:#fff;padding:22px 24px 26px}
+header h1{margin:0 0 4px;font-size:22px;font-weight:600;letter-spacing:-.01em}header p{margin:0;color:#b8c1cc;font-size:13px}
+.search{background:#fff;color:var(--ink);border-radius:10px;padding:14px;margin-top:16px;display:grid;grid-template-columns:2.4fr .9fr 1.3fr .9fr auto;gap:10px;align-items:end}
+.search label{display:block;font-size:12px;color:var(--slate);margin-bottom:4px}
+.search input,.search select{width:100%;border:1px solid var(--line);border-radius:7px;padding:10px 11px;font-size:15px;background:#fff}
+.search input:focus,.search select:focus,button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.go{background:var(--green);color:#fff;border:0;border-radius:7px;padding:11px 20px;font-size:15px;font-weight:600;height:44px}
+.go:disabled{opacity:.6;cursor:wait}
+main{max-width:1280px;margin:0 auto;padding:18px 24px 60px}
+.status{color:var(--slate);font-size:13px;margin:0 0 12px;min-height:18px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.filters select,.filters input{border:1px solid var(--line);border-radius:6px;padding:6px 9px;background:#fff;font-size:13px}
+.filters .lbl{font-size:12px;color:var(--slate);margin-left:6px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 11px;font-size:12px}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:12px 14px}
+.stat b{display:block;font-size:20px;font-weight:600;letter-spacing:-.01em}.stat span{font-size:12px;color:var(--slate)}
+.layout{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:1000px){.layout.open{grid-template-columns:1.55fr 1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.panel h2{font-size:14px;font-weight:600;margin:0;padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.panel h2 .sub{font-weight:400;color:var(--slate);font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-weight:600;color:var(--slate);font-size:11.5px;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none;background:#fafbfc;position:sticky;top:0}
+th.num,td.num{text-align:right;font-variant-numeric:tabular-nums}
+td{padding:8px 10px;border-bottom:1px solid #eef0f3;vertical-align:top}
+tr.row:hover td{background:#f7f9fb}tr.row{cursor:pointer}
+.buyer{font-weight:600}.muted{color:var(--slate);font-size:12px}
+.tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:5px;line-height:1.3;white-space:nowrap}
+.tag.hi{background:var(--red-soft);color:var(--red)}.tag.mid{background:var(--green-soft);color:var(--green)}.tag.lo{background:var(--blue-soft);color:var(--blue)}.tag.na{background:#eef0f3;color:var(--slate)}
+.tag.v{background:var(--green-soft);color:var(--green)}.tag.l{background:var(--amber-soft);color:var(--amber)}.tag.q{background:#eef0f3;color:var(--slate)}
+.bar{height:5px;background:#eef0f3;border-radius:3px;margin-top:4px;position:relative;width:110px}
+.bar i{position:absolute;top:0;bottom:0;border-radius:3px}
+.scroll{max-height:70vh;overflow:auto}
+.more{display:block;width:100%;border:0;background:#fafbfc;padding:10px;color:var(--blue);border-top:1px solid var(--line)}
+.profile{padding:14px}
+.profile h3{margin:0 0 2px;font-size:19px;font-weight:600;letter-spacing:-.01em}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px;margin:10px 0}.kv dt{color:var(--slate)}.kv dd{margin:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.mini{background:var(--paper);border-radius:8px;padding:10px 12px}.mini b{display:block;font-size:17px;font-weight:600}.mini span{font-size:12px;color:var(--slate)}
+.style{padding:12px 14px;border-radius:8px;margin:12px 0;border-left:4px solid}
+.style.hi{background:var(--red-soft);border-color:var(--red)}.style.mid{background:var(--green-soft);border-color:var(--green)}.style.lo{background:var(--blue-soft);border-color:var(--blue)}.style.na{background:#eef0f3;border-color:#c5ccd4}
+.style b{display:block;margin-bottom:2px}
+.links{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.links a,.links button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 10px;font-size:12px;text-decoration:none;color:var(--ink)}
+.links button.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.research{white-space:pre-wrap;font-size:13px;background:var(--paper);border-radius:8px;padding:12px;margin-top:8px;line-height:1.5}
+.tl{margin:0;padding:0;list-style:none;font-size:13px}.tl li{padding:7px 0;border-bottom:1px solid #eef0f3;display:grid;grid-template-columns:78px 1fr auto;gap:8px}
+.tl .d{color:var(--slate)}.tl .p{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.close{border:1px solid var(--line);background:#fff;border-radius:6px;padding:4px 9px;font-size:12px}
+.tabs{display:flex;gap:4px;padding:8px 10px;border-bottom:1px solid var(--line);background:#fafbfc}
+.tabs button{border:0;background:transparent;padding:6px 10px;border-radius:6px;font-size:13px;color:var(--slate)}.tabs #batch,.tabs #exportR{border:1px solid var(--line);background:#fff;color:var(--ink);font-size:12px}.tabs button.on{background:#fff;color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.legend{font-size:12px;color:var(--slate);padding:10px 14px;border-top:1px solid var(--line);line-height:1.6}
+.empty{padding:36px 20px;text-align:center;color:var(--slate)}
+@media(max-width:800px){.search{grid-template-columns:1fr 1fr}.search .wide{grid-column:1/-1}.go{grid-column:1/-1}header,main{padding-left:14px;padding-right:14px}.bar{width:70px}}
+@media(prefers-reduced-motion:no-preference){.panel{transition:none}}
+</style></head><body>
+<header>
+<h1>Conway Buyer Finder</h1>
+<p>Who bought near a deal, what they paid, and what kind of buyer they are. Every recorded commercial sale of $500k+ in Manhattan, Brooklyn, Queens and the Bronx since September 2020.</p>
+<div class="search">
+<div class="wide"><label for="addr">Deal address or neighborhood</label><input id="addr" placeholder="e.g. 30-15 Steinway St, Astoria  or  Astoria, Queens" autocomplete="off"></div>
+<div><label for="units">Units</label><input id="units" type="number" min="0" placeholder="8"></div>
+<div><label for="asset">Asset type</label><select id="asset"><option value="">Any type</option></select></div>
+<div><label for="radius">Radius</label><select id="radius"><option value="0.5">½ mile</option><option value="1" selected>1 mile</option><option value="2">2 miles</option><option value="5">5 miles</option><option value="nbhd">Same neighborhood</option></select></div>
+<button class="go" id="go">Find buyers</button>
+</div>
+<div style="margin-top:10px;font-size:12px;color:#b8c1cc;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span id="keyState">Research: not connected</span><button class="chip" id="keyBtn" style="background:transparent;color:#fff;border-color:#4a5568">Set API key</button><span>Needed only for the Research button when opened in a browser.</span></div>
+</header>
+<main>
+<p class="status" id="status">Type an address and hit Find buyers. Or browse the top buyers list below.</p>
+<div class="filters" id="filters">
+<span class="lbl">Bought in last</span><select id="years"><option value="1">1 yr</option><option value="2">2 yrs</option><option value="3" selected>3 yrs</option><option value="6">6 yrs</option></select>
+<span class="lbl">Unit range</span><select id="urange"><option value="0.5" selected>±50%</option><option value="0.25">±25%</option><option value="1">±100%</option><option value="any">any</option></select>
+<span class="lbl">Price</span><select id="pmin"><option value="0">any</option><option value="2000000">$2M+</option><option value="5000000">$5M+</option><option value="10000000">$10M+</option></select>
+<span class="lbl">Owner</span><button class="chip on" data-conf="all">All</button><button class="chip" data-conf="known">Named only</button><button class="chip" data-conf="repeat">Repeat buyers</button>
+<span style="flex:1"></span><button class="chip" id="csv">Export CSV</button>
+</div>
+<div class="stats" id="stats"></div>
+<div class="layout" id="layout">
+<div class="panel">
+<div class="tabs"><button class="on" data-tab="deals">Deals</button><button data-tab="buyers">Top buyers</button><span style="flex:1"></span><button id="batch" title="Runs Research on every buyer in the current list, top down, and saves results in this browser">Research all shown</button><button id="exportR" title="Download all saved research as CSV">Export research</button></div>
+<div class="scroll" id="tableWrap"></div>
+<div class="legend"><b>$/sf vs area:</b> compares each price per foot to the median of the deals currently shown. <span class="tag hi">Paid up</span> more than 20% above · <span class="tag mid">At market</span> within 20% · <span class="tag lo">Bargain</span> more than 20% below. <b>Financing:</b> acquisition loan recorded within 4 months of the deed; MERS means the lender filed through a nominee. <b>Owner source:</b> <span class="tag v">HPD principal</span> registered head officer/owner on the building · <span class="tag l">Deed c/o / mailing address</span> · <span class="tag q">LLC only</span> not yet resolved — open the profile and hit Research.</div>
+</div>
+<div class="panel" id="side" style="display:none"></div>
+</div>
+</main>
+<script>
+const D=__DATA__;
+const C=Object.fromEntries(D.cols.map((c,i)=>[c,i]));
+const g=(r,k)=>r[C[k]];
+const fmt$=v=>v==null?'—':v>=1e9?'$'+(v/1e9).toFixed(2)+'B':v>=1e6?'$'+(v/1e6).toFixed(v>=1e7?1:2)+'M':'$'+Math.round(v).toLocaleString();
+const fmtN=v=>v==null?'—':Math.round(v).toLocaleString();
+const dist=(a,b,c,d)=>{const R=3958.8,p=Math.PI/180,x=(c-a)*p,y=(d-b)*p,h=Math.sin(x/2)**2+Math.cos(a*p)*Math.cos(c*p)*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
+const median=a=>{a=a.filter(x=>x!=null&&isFinite(x)).sort((x,y)=>x-y);if(!a.length)return null;const m=a.length>>1;return a.length%2?a[m]:(a[m-1]+a[m])/2};
+const psf=r=>g(r,'sf')&&g(r,'nlots')===1?g(r,'price')/g(r,'sf'):null;
+const ppu=r=>g(r,'units')&&g(r,'nlots')===1?g(r,'price')/g(r,'units'):null;
+const isLLC=r=>/LLC only/.test(g(r,'conf'))||/Deed grantee/.test(g(r,'conf'))&&/(LLC|L\.L\.C|Corp|Inc)\b/i.test(g(r,'owner'));
+const confClass=r=>/HPD registration \(principal\)/.test(g(r,'conf'))?'v':/LLC only/.test(g(r,'conf'))?'q':'l';
+const confShort=r=>/HPD registration \(principal\)/.test(g(r,'conf'))?'HPD principal':/HPD/.test(g(r,'conf'))?'HPD corp':/c\/o/.test(g(r,'conf'))?'Deed c/o':/mailing/.test(g(r,'conf'))?'Mailing addr':/named/.test(g(r,'conf'))?'Named on deed':'LLC only';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// owner index
+const byOwner=new Map();
+D.rows.forEach(r=>{const k=g(r,'owner').toUpperCase().trim();if(!k||k==='UNKNOWN')return;if(!byOwner.has(k))byOwner.set(k,[]);byOwner.get(k).push(r)});
+const ownerKey=r=>g(r,'owner').toUpperCase().trim();
+
+// asset options + neighborhood centroids
+const assets=[...new Set(D.rows.map(r=>g(r,'asset')))].sort();
+const selA=document.getElementById('asset');assets.forEach(a=>{const o=document.createElement('option');o.value=a;o.textContent=a;selA.appendChild(o)});
+const nb={};D.rows.forEach(r=>{const k=(g(r,'nbhd')+', '+g(r,'boro')).toUpperCase();(nb[k]=nb[k]||{la:[],ln:[],n:g(r,'nbhd'),b:g(r,'boro')});nb[k].la.push(g(r,'lat'));nb[k].ln.push(g(r,'lng'))});
+Object.values(nb).forEach(v=>{v.lat=median(v.la);v.lng=median(v.ln)});
+
+// api key (browser use)
+const store={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+let API_KEY=store.get('anthropic-key')||'';
+function keyState(){document.getElementById('keyState').textContent=API_KEY?'Research: connected (key saved in this browser)':'Research: not connected'}
+document.getElementById('keyBtn').onclick=()=>{const k=prompt('Paste your Anthropic API key (starts with sk-ant-). It is stored only in this browser.',API_KEY);if(k!==null){API_KEY=k.trim();store.set('anthropic-key',API_KEY);keyState()}};
+keyState();
+async function claude(body){const h={'Content-Type':'application/json'};if(API_KEY){h['x-api-key']=API_KEY;h['anthropic-version']='2023-06-01';h['anthropic-dangerous-direct-browser-access']='true'}
+  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:h,body:JSON.stringify(body)});const j=await res.json();if(j.error)throw new Error(j.error.message||'API error');return j}
+// state
+let S={lat:null,lng:null,label:'',nbhd:null,boro:null,tab:'deals',conf:'all',sort:{k:'dist',d:1},limit:150,results:[],med:{}};
+const $=id=>document.getElementById(id);
+
+async function geocode(q){
+  q=q.trim();if(!q)return null;
+  // neighborhood match first
+  const ql=q.toUpperCase().replace(/[^A-Z0-9, ]/g,'');
+  for(const k in nb){const n=nb[k].n.toUpperCase();if(ql===k||ql===n||(!/\d/.test(ql)&&(ql.startsWith(n)||n.startsWith(ql.split(',')[0].trim()))&&ql.length>3)){return{lat:nb[k].lat,lng:nb[k].lng,label:nb[k].n+', '+nb[k].b,nbhd:nb[k].n,boro:nb[k].b,approx:true}}}
+  const qq=/new york|ny|brooklyn|queens|bronx|manhattan/i.test(q)?q:q+', New York, NY';
+  try{const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=us&viewbox=-74.05,40.95,-73.70,40.55&bounded=1&q='+encodeURIComponent(qq),{headers:{'Accept':'application/json'}});
+    const j=await r.json();if(j&&j[0])return{lat:+j[0].lat,lng:+j[0].lon,label:j[0].display_name.split(',').slice(0,3).join(',')}}catch(e){}
+  try{const j=await claude({model:'claude-sonnet-4-6',max_tokens:1000,tools:[{type:'web_search_20250305',name:'web_search'}],messages:[{role:'user',content:`Find the latitude and longitude of this New York City address: "${qq}". Reply with ONLY a JSON object like {"lat":40.76,"lng":-73.92,"label":"short label"} and nothing else.`}]});
+    const t=(j.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');const m=t.match(/\{[\s\S]*\}/);if(m){const o=JSON.parse(m[0]);return{lat:o.lat,lng:o.lng,label:o.label||q}}}catch(e){}
+  return null;
+}
+
+function nearestNbhd(lat,lng){let best=null,bd=1e9;for(const k in nb){const d=dist(lat,lng,nb[k].lat,nb[k].lng);if(d<bd){bd=d;best=nb[k]}}return best}
+
+function filterRows(){
+  const yrs=+$('years').value,cut=new Date();cut.setFullYear(cut.getFullYear()-yrs);const cutS=cut.toISOString().slice(0,10);
+  const asset=$('asset').value,units=+$('units').value||0,ur=$('urange').value,pmin=+$('pmin').value,rad=$('radius').value;
+  let rows=D.rows.filter(r=>g(r,'date')>=cutS&&g(r,'price')>=pmin&&(!asset||g(r,'asset')===asset));
+  if(units&&ur!=='any'){const f=+ur;rows=rows.filter(r=>g(r,'units')!=null&&g(r,'units')>=units*(1-f)&&g(r,'units')<=units*(1+f))}
+  if(S.lat!=null){
+    if(rad==='nbhd'){const n=S.nbhd?{n:S.nbhd,b:S.boro}:nearestNbhd(S.lat,S.lng);rows=rows.filter(r=>g(r,'nbhd')===n.n&&g(r,'boro')===n.b)}
+    else rows=rows.filter(r=>dist(S.lat,S.lng,g(r,'lat'),g(r,'lng'))<=+rad);
+    rows.forEach(r=>r._d=dist(S.lat,S.lng,g(r,'lat'),g(r,'lng')));
+  } else rows.forEach(r=>r._d=null);
+  if(S.conf==='known')rows=rows.filter(r=>!isLLC(r));
+  if(S.conf==='repeat')rows=rows.filter(r=>(byOwner.get(ownerKey(r))||[]).length>1);
+  return rows;
+}
+const lenderName=l=>/^mers$|mortgage electronic/i.test(l||'')?'MERS (nominee — lender not disclosed)':l;
+function finCell(r){const a=g(r,'acq'),s=g(r,'sold'),f=g(r,'refi');let h='';
+  if(a)h+=`<div>${esc(lenderName(a[0]))}</div><div class="muted">${fmt$(a[1])}${a[2]?' · '+Math.round(a[2]*100)+'% of price':''}</div>`;else h+='<div class="muted">All cash / no loan found</div>';
+  if(f)h+=`<div class="muted">Refi ${f[2].slice(0,7)} ${fmt$(f[1])}</div>`;
+  if(s)h+=`<div><span class="tag l">Resold ${s[0].slice(0,7)} ${fmt$(s[1])}</span></div>`;return h}
+function psfTag(v,med){if(v==null||!med)return['na','—'];const x=v/med;return x>1.2?['hi','Paid up']:x<0.8?['lo','Bargain']:['mid','At market']}
+
+function run(){
+  const rows=filterRows();S.results=rows;
+  const mp=median(rows.map(psf)),mu=median(rows.map(ppu));S.med={psf:mp,ppu:mu};
+  const owners=new Set(rows.map(ownerKey));
+  const where=S.lat!=null?($('radius').value==='nbhd'?'in '+(S.nbhd||nearestNbhd(S.lat,S.lng).n):'within '+$('radius').value+' mi of '+S.label):'across all four boroughs';
+  $('status').textContent=`${rows.length.toLocaleString()} deals · ${owners.size.toLocaleString()} buyers ${where}, last ${$('years').value} yrs${$('asset').value?' · '+$('asset').value:''}${+$('units').value?' · ~'+$('units').value+' units':''}.`;
+  $('stats').innerHTML=[['Deals',rows.length.toLocaleString()],['Median $/sf',mp?'$'+Math.round(mp):'—'],['Median $/unit',mu?fmt$(mu):'—'],['Median price',fmt$(median(rows.map(r=>g(r,'price'))))],['Total volume',fmt$(rows.reduce((a,r)=>a+(g(r,'nlots')===1?g(r,'price'):0),0))],['Named owners',rows.length?Math.round(100*rows.filter(r=>!isLLC(r)).length/rows.length)+'%':'—']].map(([k,v])=>`<div class="stat"><b>${v}</b><span>${k}</span></div>`).join('');
+  S.limit=150;renderTable();
+}
+function sortRows(rows){const {k,d}=S.sort;const val=r=>k==='dist'?(r._d??9e9):k==='psf'?(psf(r)??-1):k==='ppu'?(ppu(r)??-1):k==='owner'?g(r,'owner'):g(r,k);return [...rows].sort((a,b)=>{const x=val(a),y=val(b);return (x>y?1:x<y?-1:0)*d})}
+function renderTable(){
+  const w=$('tableWrap');
+  if(S.tab==='buyers')return renderBuyers();
+  const rows=sortRows(S.results);
+  if(!rows.length){w.innerHTML='<div class="empty">No deals match. Widen the radius, unit range or time window.</div>';return}
+  const h=(k,l,num)=>`<th class="${num?'num':''}" data-k="${k}">${l}${S.sort.k===k?(S.sort.d>0?' ↑':' ↓'):''}</th>`;
+  let html=`<table><thead><tr>${h('owner','Buyer')}${h('date','Bought')}${h('addr','Property')}${h('units','Units',1)}${h('sf','SF',1)}${h('price','Price',1)}${h('psf','$/sf',1)}<th>vs area</th>${h('ppu','$/unit',1)}<th>Financing</th>${S.lat!=null?h('dist','Dist',1):''}</tr></thead><tbody>`;
+  rows.slice(0,S.limit).forEach((r,i)=>{const p=psf(r),[c,t]=psfTag(p,S.med.psf);const n=(byOwner.get(ownerKey(r))||[]).length;
+    html+=`<tr class="row" data-i="${D.rows.indexOf(r)}"><td><div class="buyer">${esc(g(r,'owner'))}</div><div class="muted">${esc(g(r,'grantee'))}${n>1?` · <b>${n} deals</b>`:''} <span class="tag ${confClass(r)}">${confShort(r)}</span></div></td>
+    <td>${g(r,'date')}</td><td>${esc(g(r,'addr'))}<div class="muted">${esc(g(r,'nbhd'))}, ${g(r,'boro')} · ${esc(g(r,'asset'))}${g(r,'nlots')>1?' · <i>portfolio of '+g(r,'nlots')+' lots, price is total</i>':''}</div></td>
+    <td class="num">${fmtN(g(r,'units'))}</td><td class="num">${fmtN(g(r,'sf'))}</td><td class="num">${fmt$(g(r,'price'))}</td><td class="num">${p?'$'+Math.round(p):'—'}</td>
+    <td><span class="tag ${c}">${t}</span>${p&&S.med.psf?`<div class="bar"><i style="left:0;width:${Math.min(100,50*p/S.med.psf)}%;background:${c==='hi'?'var(--red)':c==='lo'?'var(--blue)':'var(--green)'}"></i></div>`:''}</td>
+    <td class="num">${ppu(r)?fmt$(ppu(r)):'—'}</td><td>${finCell(r)}</td>${S.lat!=null?`<td class="num">${r._d!=null?r._d.toFixed(2)+' mi':'—'}</td>`:''}</tr>`});
+  html+='</tbody></table>';if(rows.length>S.limit)html+=`<button class="more" id="more">Show ${Math.min(150,rows.length-S.limit)} more of ${rows.length.toLocaleString()}</button>`;
+  w.innerHTML=html;
+  w.querySelectorAll('th[data-k]').forEach(t=>t.onclick=()=>{const k=t.dataset.k;S.sort=S.sort.k===k?{k,d:-S.sort.d}:{k,d:k==='date'||k==='price'||k==='psf'||k==='ppu'?-1:1};renderTable()});
+  w.querySelectorAll('tr.row').forEach(t=>t.onclick=()=>openProfile(D.rows[+t.dataset.i]));
+  const m=$('more');if(m)m.onclick=()=>{S.limit+=150;renderTable()};
+}
+function renderBuyers(){
+  const w=$('tableWrap');const agg=new Map();
+  S.results.forEach(r=>{const k=ownerKey(r);if(!k||k==='UNKNOWN')return;const a=agg.get(k)||{k,name:g(r,'owner'),n:0,vol:0,units:0,psf:[],last:'',first:'9',llc:isLLC(r),assets:{}};a.n++;if(g(r,'nlots')===1)a.vol+=g(r,'price');a.units+=g(r,'units')||0;const p=psf(r);if(p&&S.med.psf)a.psf.push(p/S.med.psf);a.last=g(r,'date')>a.last?g(r,'date'):a.last;a.first=g(r,'date')<a.first?g(r,'date'):a.first;a.assets[g(r,'asset')]=(a.assets[g(r,'asset')]||0)+1;agg.set(k,a)});
+  const list=[...agg.values()].sort((a,b)=>b.n-a.n||b.vol-a.vol);
+  if(!list.length){w.innerHTML='<div class="empty">No buyers match.</div>';return}
+  let html=`<table><thead><tr><th>Buyer</th><th class="num">Deals here</th><th class="num">Volume</th><th class="num">Units</th><th>Buys</th><th>vs area $/sf</th><th>Last bought</th><th class="num">All NYC deals</th></tr></thead><tbody>`;
+  list.slice(0,S.limit).forEach(a=>{const rel=median(a.psf);const [c,t]=rel?psfTag(rel,1):['na','—'];const all=(byOwner.get(a.k)||[]).length;const top=Object.entries(a.assets).sort((x,y)=>y[1]-x[1]).slice(0,2).map(x=>x[0]).join(', ');
+    html+=`<tr class="row" data-k="${esc(a.k)}"><td><div class="buyer">${esc(a.name)}</div>${a.llc?'<span class="tag q">LLC only</span>':''}</td><td class="num">${a.n}</td><td class="num">${fmt$(a.vol)}</td><td class="num">${a.units||'—'}</td><td class="muted">${esc(top)}</td><td><span class="tag ${c}">${t}${rel?' ('+Math.round(rel*100)+'%)':''}</span></td><td>${a.last}</td><td class="num">${all}</td></tr>`});
+  html+='</tbody></table>';if(list.length>S.limit)html+=`<button class="more" id="more">Show more</button>`;
+  w.innerHTML=html;w.querySelectorAll('tr.row').forEach(t=>t.onclick=()=>openProfile(byOwner.get(t.dataset.k)[0]));const m=$('more');if(m)m.onclick=()=>{S.limit+=150;renderTable()};
+}
+
+// ---------- buyer profile ----------
+let cache={};try{cache=JSON.parse(store.get('research-cache')||'{}')}catch(e){}try{(async()=>{if(window.storage){const r=await window.storage.get('research-cache');if(r&&r.value)Object.assign(cache,JSON.parse(r.value))}})()}catch(e){}
+function areaMedianPsf(r){const near=D.rows.filter(x=>g(x,'asset')===g(r,'asset')&&dist(g(r,'lat'),g(r,'lng'),g(x,'lat'),g(x,'lng'))<=1&&Math.abs(new Date(g(x,'date'))-new Date(g(r,'date')))<548*864e5&&x!==r);return median(near.map(psf))}
+function openProfile(r){
+  const k=ownerKey(r),deals=(byOwner.get(k)||[r]).slice().sort((a,b)=>g(b,'date')<g(a,'date')?-1:1);
+  const vol=deals.reduce((a,x)=>a+(g(x,'nlots')===1?g(x,'price'):0),0),units=deals.reduce((a,x)=>a+(g(x,'units')||0),0);
+  const rels=deals.map(x=>{const p=psf(x),m=areaMedianPsf(x);return p&&m?p/m:null}).filter(Boolean);const rel=median(rels);
+  const [sc,st]=rel?psfTag(rel,1):['na','Not enough $/sf data'];
+  const styleTxt={hi:`Pays above the area. Median ${Math.round(rel*100)}% of nearby $/sf for the same asset type. Aggressive — good target when you need a strong number.`,mid:`Pays market. Median ${Math.round(rel*100)}% of nearby $/sf. Reliable, will transact at a fair price.`,lo:`Bargain hunter. Median ${Math.round(rel*100)}% of nearby $/sf. Buys distress, estates, value-add — do not expect a top bid.`,na:'Need square footage on more of their deals to gauge pricing behavior.'}[sc];
+  const boros={},assets={},ents=new Set(),mails=new Set();deals.forEach(x=>{boros[g(x,'boro')]=(boros[g(x,'boro')]||0)+1;assets[g(x,'asset')]=(assets[g(x,'asset')]||0)+1;g(x,'grantee').split(' | ').forEach(e=>ents.add(e));if(g(x,'mail'))mails.add(g(x,'mail'));if(g(x,'hpdaddr'))mails.add(g(x,'hpdaddr'))});
+  const mix=o=>Object.entries(o).sort((a,b)=>b[1]-a[1]).map(([a,b])=>`${a} (${b})`).join(', ');
+  const q=encodeURIComponent(g(r,'owner')),q2=encodeURIComponent(g(r,'grantee').split(' | ')[0]);
+  const side=$('side');side.style.display='';$('layout').classList.add('open');
+  side.innerHTML=`<h2>Buyer profile <button class="close" id="closeP">Close</button></h2><div class="profile">
+  <h3>${esc(g(r,'owner'))}</h3><div class="muted"><span class="tag ${confClass(r)}">${confShort(r)}</span> ${esc(g(r,'conf'))}</div>
+  <div class="grid2"><div class="mini"><b>${deals.length}</b><span>deals since 2020</span></div><div class="mini"><b>${fmt$(vol)}</b><span>total bought</span></div><div class="mini"><b>${units||'—'}</b><span>units acquired</span></div><div class="mini"><b>${deals.length?g(deals[0],'date'):'—'}</b><span>most recent buy</span></div></div>
+  <div class="style ${sc}"><b>${st}</b>${styleTxt}</div>
+  ${(()=>{const acq=deals.map(x=>g(x,'acq')).filter(Boolean),ltp=acq.map(a=>a[2]).filter(Boolean),lend={},sold=deals.filter(x=>g(x,'sold'));acq.forEach(a=>{const n=lenderName(a[0]);lend[n]=(lend[n]||0)+1});
+   const top=Object.entries(lend).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([a,b])=>`${a}${b>1?' ('+b+')':''}`).join(', ');const cash=deals.length-acq.length;
+   const flips=sold.map(x=>{const s=g(x,'sold');const yrs=(new Date(s[0])-new Date(g(x,'date')))/31557600000;return `${g(x,'addr')}: bought ${fmt$(g(x,'price'))} → sold ${fmt$(s[1])} after ${yrs.toFixed(1)} yrs (${s[1]>g(x,'price')?'+':''}${Math.round((s[1]/g(x,'price')-1)*100)}%)`}).join('<br>');
+   return `<dl class="kv"><dt>Lenders</dt><dd>${top||'—'}${cash?`<div class="muted">${cash} of ${deals.length} deals with no acquisition loan on record (cash or seller-financed)</div>`:''}</dd><dt>Leverage</dt><dd>${ltp.length?'Typical loan '+Math.round(median(ltp)*100)+'% of price'+(median(ltp)>0.75?' — highly levered':median(ltp)<0.5?' — low leverage / equity heavy':''):'—'}</dd><dt>Refinanced</dt><dd>${deals.filter(x=>g(x,'refi')).length||'none'}</dd><dt>Resold since</dt><dd>${flips||'none — holds what they buy'}</dd></dl>`})()}
+  <dl class="kv"><dt>Where</dt><dd>${mix(boros)}</dd><dt>What</dt><dd>${mix(assets)}</dd><dt>Entities used</dt><dd>${esc([...ents].slice(0,8).join('; '))}${ents.size>8?' …':''}</dd><dt>Mailing / HPD address</dt><dd>${esc([...mails].slice(0,3).join(' · '))||'—'}</dd>${g(r,'pluto_owner')?`<dt>Owner on tax roll</dt><dd>${esc(g(r,'pluto_owner'))}</dd>`:''}</dl>
+  <div class="links"><button class="primary" id="research">Research this buyer</button><a target="_blank" href="https://www.pincusco.com/?s=${q}">PincusCo</a><a target="_blank" href="https://therealdeal.com/?s=${q}">The Real Deal</a><a target="_blank" href="https://commercialobserver.com/?s=${q}">Commercial Observer</a><a target="_blank" href="https://www.google.com/search?q=${q}+real+estate+new+york">Google</a>${g(r,'doc')?`<a target="_blank" href="https://a836-acris.nyc.gov/DS/DocumentSearch/DocumentImageView?doc_id=${g(r,'doc')}">Deed PDF (ACRIS)</a>`:''}<a target="_blank" href="https://www.google.com/search?q=${q2}+llc">Search LLC</a></div>
+  <div id="researchOut"></div>
+  <h2 style="border:0;padding:12px 0 6px">All purchases <span class="sub">newest first</span></h2>
+  <ul class="tl">${deals.map(x=>{const p=psf(x),m=areaMedianPsf(x),[c,t]=p&&m?psfTag(p/m,1):['na',''];return `<li><span class="d">${g(x,'date')}</span><span>${esc(g(x,'addr'))}<div class="muted">${esc(g(x,'nbhd'))}, ${g(x,'boro')} · ${esc(g(x,'asset'))}${g(x,'units')?' · '+g(x,'units')+' units':''}${g(x,'nlots')>1?' · portfolio':''}</div></span><span class="p">${fmt$(g(x,'price'))}<div class="muted">${p?'$'+Math.round(p)+'/sf ':''}${t?`<span class="tag ${c}">${t}</span>`:''}</div></span></li>`}).join('')}</ul></div>`;
+  $('closeP').onclick=()=>{side.style.display='none';$('layout').classList.remove('open')};
+  $('research').onclick=()=>research(r,deals);
+  if(cache[k])$('researchOut').innerHTML=`<div class="research">${esc(cache[k])}</div>`;
+  side.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function buildPrompt(r,ctx){return `You are researching a New York City commercial real estate buyer for a brokerage. Buyer as resolved from public records: "${g(r,'owner')}" (confidence: ${g(r,'conf')}). Deed entity(ies): ${g(r,'grantee')}. Mailing address on deed: ${g(r,'mail')||'n/a'}. HPD registration address: ${g(r,'hpdaddr')||'n/a'}.
+Recent purchases from records:
+${ctx}
+Lenders on record: ${[...new Set((byOwner.get(ownerKey(r))||[]).map(x=>g(x,'acq')&&g(x,'acq')[0]).filter(Boolean))].slice(0,5).join(', ')||'none found'}
+
+Search PincusCo (pincusco.com), The Real Deal, Commercial Observer, Crain's, PropertyShark-style coverage and the general web. Confirm or correct WHO is actually behind these LLCs (the principal or firm), and give:
+1. True owner / principal(s) and firm name, with how confident you are and which source confirmed it.
+2. What they buy (asset types, size, boroughs, rent-stabilized vs free-market, value-add vs stabilized) and typical price range.
+3. Portfolio size if reported (units, buildings, $).
+4. Any lenders they use, partners, or recent news (sales, refis, lawsuits, foreclosures).
+5. Best way to reach them: office address, website, phone or email if public, and any named acquisitions contact.
+Be concise, use short bullets, cite the source name for each fact, and say plainly when something could not be verified.`}
+async function research(r,deals){const out=$('researchOut'),btn=$('research');btn.disabled=true;btn.textContent='Searching PincusCo, TRD, CO…';const k=ownerKey(r);const ctx=deals.slice(0,6).map(x=>`${g(x,'date')} ${g(x,'addr')}, ${g(x,'nbhd')}, ${g(x,'boro')} for ${fmt$(g(x,'price'))} via ${g(x,'grantee')}`).join('\n');const prompt=buildPrompt(r,ctx);
+  try{const j=await claude({model:'claude-sonnet-4-6',max_tokens:1500,tools:[{type:'web_search_20250305',name:'web_search'}],messages:[{role:'user',content:prompt}]});
+    const t=(j.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim()||'No result returned.';
+    cache[k]=t;store.set('research-cache',JSON.stringify(cache));try{if(window.storage)await window.storage.set('research-cache',JSON.stringify(cache))}catch(e){}
+    out.innerHTML=`<div class="research">${esc(t)}</div>`;
+  }catch(e){out.innerHTML=`<div class="research">Research could not run: ${esc(e.message)}. ${API_KEY?'Check the API key.':'Click "Set API key" at the top, then try again.'} The PincusCo / TRD / CO links above still work.</div>`}
+  btn.disabled=false;btn.textContent='Research again';
+}
+
+// ---------- batch research ----------
+let batchRun=false;
+function currentOwners(){const seen=new Map();S.results.forEach(r=>{const k=ownerKey(r);if(k&&k!=='UNKNOWN'&&!seen.has(k))seen.set(k,r)});return [...seen.values()].sort((a,b)=>(byOwner.get(ownerKey(b))||[]).length-(byOwner.get(ownerKey(a))||[]).length)}
+$('batch').onclick=async()=>{
+  if(batchRun){batchRun=false;$('batch').textContent='Research all shown';return}
+  if(!API_KEY){alert('Set your API key first (top of page).');return}
+  const list=currentOwners().filter(r=>!cache[ownerKey(r)]);
+  if(!list.length){alert('Every buyer in this list already has research saved.');return}
+  if(!confirm(`Research ${list.length} buyers not yet looked up? Roughly ${Math.ceil(list.length*0.04)} dollars of API usage. You can stop any time.`))return;
+  batchRun=true;let n=0;
+  for(const r of list){if(!batchRun)break;$('batch').textContent=`Stop (${n}/${list.length}) · ${g(r,'owner').slice(0,28)}`;
+    try{await researchQuiet(r,(byOwner.get(ownerKey(r))||[r]))}catch(e){}n++;await new Promise(x=>setTimeout(x,1200))}
+  batchRun=false;$('batch').textContent='Research all shown';$('status').textContent=`Batch research finished: ${n} buyers saved. Open any profile to read it, or Export research.`}
+async function researchQuiet(r,deals){const k=ownerKey(r);const ctx=deals.slice(0,6).map(x=>`${g(x,'date')} ${g(x,'addr')}, ${g(x,'nbhd')}, ${g(x,'boro')} for ${fmt$(g(x,'price'))} via ${g(x,'grantee')}`).join('\n');
+  const j=await claude({model:'claude-sonnet-4-6',max_tokens:1200,tools:[{type:'web_search_20250305',name:'web_search'}],messages:[{role:'user',content:buildPrompt(r,ctx)}]});
+  const t=(j.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();if(t){cache[k]=t;store.set('research-cache',JSON.stringify(cache))}}
+$('exportR').onclick=()=>{const rows=[['Buyer','Deals in database','Total bought','Research']];for(const [k,txt] of Object.entries(cache)){const ds=byOwner.get(k)||[];rows.push([ds[0]?g(ds[0],'owner'):k,ds.length,ds.reduce((a,x)=>a+(g(x,'nlots')===1?g(x,'price'):0),0),txt])}
+  const csv=rows.map(a=>a.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='buyer_research.csv';a.click()};
+// ---------- wiring ----------
+$('go').onclick=async()=>{const q=$('addr').value;$('go').disabled=true;$('status').textContent='Locating…';
+  if(!q.trim()){S.lat=null;S.label='';S.nbhd=null;S.boro=null}else{const loc=await geocode(q);if(!loc){$('status').textContent='Could not place that address. Try "number street, neighborhood" or just the neighborhood name.';$('go').disabled=false;return}S.lat=loc.lat;S.lng=loc.lng;S.label=loc.label;S.nbhd=loc.nbhd||null;S.boro=loc.boro||null;if(loc.approx&&$('radius').value!=='nbhd'&&!/\d/.test(q))$('radius').value='nbhd'}
+  $('go').disabled=false;run()};
+$('addr').addEventListener('keydown',e=>{if(e.key==='Enter')$('go').click()});
+['years','urange','pmin','asset','radius','units'].forEach(id=>$(id).addEventListener('change',()=>{if(id==='units'||id==='asset'){if(S.lat!=null||!$('addr').value.trim())run()}else run()}));
+document.querySelectorAll('.chip[data-conf]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.chip[data-conf]').forEach(x=>x.classList.remove('on'));b.classList.add('on');S.conf=b.dataset.conf;run()});
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');S.tab=b.dataset.tab;S.limit=150;renderTable()});
+$('csv').onclick=()=>{const rows=sortRows(S.results);const head=['Buyer','Owner source','Deed entity','Date','Address','Neighborhood','Borough','Asset','Units','SF','Price','$/sf','$/unit','Lots in deal','Seller','Mailing address','HPD address','ACRIS doc','Acq lender','Acq loan','Loan % of price','Latest refi lender','Refi amount','Refi date','Resold date','Resold price','Research'];
+  const csv=[head].concat(rows.map(r=>[g(r,'owner'),g(r,'conf'),g(r,'grantee'),g(r,'date'),g(r,'addr'),g(r,'nbhd'),g(r,'boro'),g(r,'asset'),g(r,'units'),g(r,'sf'),g(r,'price'),psf(r)?Math.round(psf(r)):'',ppu(r)?Math.round(ppu(r)):'',g(r,'nlots'),g(r,'seller'),g(r,'mail'),g(r,'hpdaddr'),g(r,'doc'),...(g(r,'acq')?[g(r,'acq')[0],g(r,'acq')[1],g(r,'acq')[2]?Math.round(g(r,'acq')[2]*100)+'%':'']:['','','']),...(g(r,'refi')?g(r,'refi'):['','','']),...(g(r,'sold')?g(r,'sold'):['','']),cache[ownerKey(r)]||''])).map(a=>a.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='buyers.csv';a.click()};
+run();
+</script></body></html>
