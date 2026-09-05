@@ -98,5 +98,5 @@ try:
     deals=[r for r in old if r[ci] not in processed]+deals
 except Exception: pass
 json.dump({"cols":D["cols"],"rows":deals,"pulled":D.get("pulled")},open("site/data/FL.json","w"),separators=(",",":"))
-json.dump(sorted({(p["county"],) for f in glob.glob("site/props/FL_*.json") for p in json.load(open(f))}),open("site/props/FL_counties.json","w"))
+json.dump(sorted({(p["county"],) for f in glob.glob("site/props/FL_*.json") if "counties" not in f for p in json.load(open(f))}),open("site/props/FL_counties.json","w"))
 print("FL deals since 2020 (any price)",len(deals),flush=True)
