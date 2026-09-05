@@ -67,7 +67,7 @@ for p in range(1,pages+1):
             from datetime import datetime
             try: dt=datetime.strptime(cl.group(1),"%B %d, %Y").strftime("%Y-%m-%d")
             except Exception: pass
-        D["rows"].append([dt,boro,nbhd,addr or nbhd+" (address pending)",asset,bc,int(units.group(1)) if units else None,int(sf.group(1).replace(",","")) if sf else None,price,1,lat,lng,"",buyer,"PincusCo report (true owner as reported)",seller,"","","",None,"",None,link,None,None,None])
+        D["rows"].append([dt,boro,nbhd,addr or nbhd+" (address pending)",asset,bc,int(units.group(1)) if units else None,int(sf.group(1).replace(",","")) if sf else None,price,1,lat,lng,"",buyer,"PincusCo report (true owner as reported)",seller,"","","",None,"",None,link,None,None,None,"NY"])
         seen.add(link); added+=1
         print("+",dt,buyer,"|",addr or nbhd,"|",price)
 D["pulled"]=date.today().isoformat()

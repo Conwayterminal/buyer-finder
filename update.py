@@ -141,7 +141,7 @@ if len(m):
                 if len(a): a=a.sort_values("document_amt",ascending=False).iloc[0]; acq=[str(a.lender or ""),int(a.document_amt),round(a.document_amt/price,2) if r.nlots==1 else None]
             units=int(r.unitsres) if pd.notna(r.unitsres) and r.unitsres>0 else None
             sf=int(r.bldgarea) if pd.notna(r.bldgarea) and r.bldgarea>0 else None
-            D["rows"].append([dt,boro,nearest(r.latitude,r.longitude,boro),addr,AC.get(r.bc[0],"Other"),r.bc,units,sf,price,int(r.nlots),round(r.latitude,5),round(r.longitude,5),g.title()[:150],owner[:150],conf,str(r.grantor or "").title()[:120],mail[:120],haddr[:120],str(r.ownername or "").title()[:80],int(r.yearbuilt) if pd.notna(r.yearbuilt) else None,str(r.zonedist1 or ""),int(r.lotarea) if pd.notna(r.lotarea) else None,r.document_id,acq,None,None])
+            D["rows"].append([dt,boro,nearest(r.latitude,r.longitude,boro),addr,AC.get(r.bc[0],"Other"),r.bc,units,sf,price,int(r.nlots),round(r.latitude,5),round(r.longitude,5),g.title()[:150],owner[:150],conf,str(r.grantor or "").title()[:120],mail[:120],haddr[:120],str(r.ownername or "").title()[:80],int(r.yearbuilt) if pd.notna(r.yearbuilt) else None,str(r.zonedist1 or ""),int(r.lotarea) if pd.notna(r.lotarea) else None,r.document_id,acq,None,None,"NY"])
             have_addr.add((addr,dt,price)); added+=1
         print("added",added)
 # 2) resale / refi refresh for existing rows: new MTGE & DEED docs in window on any tracked BBL
