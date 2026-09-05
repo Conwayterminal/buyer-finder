@@ -66,27 +66,34 @@ if not q: q=[f for f in files if "/cor" in f[0] and f[1]>50_000_000]
 print("candidate files",len(q)); [print(" ",p,s) for p,s in q[:12]]
 found={}
 checked=False
+import zipfile
+q=[f for f in q if f[0].lower().endswith("cordata.zip") and "np" not in f[0].lower()]
 for p,size in q:
-    print("reading",p,size,flush=True)
-    with sf.open(p,"rb") as fh:
-        fh.prefetch(size); buf=b""
-        while True:
-            chunk=fh.read(4*1024*1024)
-            if not chunk: break
-            buf+=chunk; recs=buf.split(b"\n"); buf=recs.pop()
-            for rec in recs:
-                rec=rec.decode("latin1")
-                if len(rec)<600: continue
-                if not checked:
-                    checked=True; print("SAMPLE num=",repr(fld(rec,"COR_NUMBER")),"name=",repr(fld(rec,name_key))[:60],"off1=",repr(fld(rec,"OFF1_NAME"))[:50],"ra=",repr(fld(rec,"RA_NAME"))[:40],"len",len(rec),flush=True)
-                k=norm(fld(rec,name_key))
-                if k in targets and k not in found:
-                    offs=[]
-                    for i in range(1,7):
-                        nm=fld(rec,f"OFF{i}_NAME") if f"OFF{i}_NAME" in F else ""
-                        if nm: offs.append({"title":fld(rec,f"OFF{i}_TITLE") if f"OFF{i}_TITLE" in F else "","name":nm.title(),"addr":", ".join(v for v in [fld(rec,f"OFF{i}_ADD_1").title(),fld(rec,f"OFF{i}_CITY").title(),fld(rec,f"OFF{i}_STATE")] if f"OFF{i}_ADD_1" in F and v)})
-                    found[k]={"biz":fld(rec,name_key).title(),"docnum":fld(rec,"COR_NUMBER") if "COR_NUMBER" in F else "","status":fld(rec,"COR_STATUS") if "COR_STATUS" in F else "","mail":", ".join(v for v in [fld(rec,x).title() for x in ("COR_MAIL_ADD_1","COR_MAIL_CITY","COR_MAIL_STATE") if x in F] if v),"filed":fld(rec,"COR_FILE_DATE") if "COR_FILE_DATE" in F else "","ra":{"name":fld(rec,"RA_NAME").title() if "RA_NAME" in F else "","addr":", ".join(v for v in [fld(rec,x).title() for x in ("RA_ADD_1","RA_CITY","RA_STATE") if x in F] if v)},"officers":offs}
-    print("matched so far",len(found),flush=True)
+    local="/tmp/"+os.path.basename(p); print("downloading",p,size,flush=True)
+    sf.get(p,local); print("downloaded",os.path.getsize(local),flush=True)
+    with zipfile.ZipFile(local) as zf:
+        for member in zf.namelist():
+            print("member",member,flush=True)
+            with zf.open(member) as fh:
+                buf=b""
+                while True:
+                    chunk=fh.read(8*1024*1024)
+                    if not chunk: break
+                    buf+=chunk; recs=buf.split(b"\n"); buf=recs.pop()
+                    for rec in recs:
+                        rec=rec.decode("latin1").rstrip("\r")
+                        if len(rec)<600: continue
+                        if not checked:
+                            checked=True; print("SAMPLE num=",repr(fld(rec,"COR_NUMBER")),"name=",repr(fld(rec,name_key))[:60],"off1=",repr(fld(rec,"OFF1_NAME"))[:50],"ra=",repr(fld(rec,"RA_NAME"))[:40],"len",len(rec),flush=True)
+                        k=norm(fld(rec,name_key))
+                        if k in targets and k not in found:
+                            offs=[]
+                            for i in range(1,7):
+                                nm=fld(rec,f"OFF{i}_NAME")
+                                if nm: offs.append({"title":fld(rec,f"OFF{i}_TITLE"),"name":nm.title(),"addr":", ".join(v for v in [fld(rec,f"OFF{i}_ADD_1").title(),fld(rec,f"OFF{i}_CITY").title(),fld(rec,f"OFF{i}_STATE")] if v)})
+                            found[k]={"biz":fld(rec,name_key).title(),"docnum":fld(rec,"COR_NUMBER"),"status":fld(rec,"COR_STATUS"),"mail":", ".join(v for v in [fld(rec,x).title() for x in ("COR_MAIL_ADD_1","COR_MAIL_CITY","COR_MAIL_STATE")] if v),"filed":fld(rec,"COR_FILE_DATE"),"ra":{"name":fld(rec,"RA_NAME").title(),"addr":", ".join(v for v in [fld(rec,x).title() for x in ("RA_ADD_1","RA_CITY","RA_STATE")] if v)},"officers":offs}
+            print("matched so far",len(found),flush=True)
+    os.remove(local)
 json.dump(found,open("fl_sunbiz.json","w"))
 # --- apply
 up=0
