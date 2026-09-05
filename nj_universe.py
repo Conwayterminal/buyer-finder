@@ -83,7 +83,7 @@ for fn in files:
             l=raw.decode("latin1")
             if len(l)<640: continue
             pc=sl(l,627,629)
-            if pc not in ("4A","4B","4C","1","2"): continue
+            if pc not in ("4A","4B","4C","1"): continue
             try: price=max(int(sl(l,38,46) or 0),int(sl(l,47,55) or 0))
             except Exception: continue
             if price<=0: continue
@@ -98,7 +98,7 @@ for fn in files:
             mail=po[0] if po and (po[1]==dt or (po[2] and int(po[2])==price)) else ""
             if pc=="2" and int(sl(l,630,632) or 0)<3 and "3" not in sl(l,630,632): 
                 pass
-            deals.append([dt,c_t[0]+" County",c_t[1],sl(l,298,322).title() or "Address not listed",{"4A":"Retail / commercial","4B":"Industrial","4C":"Multifamily 5+ units","1":"Vacant land / development","2":"Small residential"}[pc],pc,None,None,price,1,round(ll[0],5),round(ll[1],5),"",("Undisclosed - mail to "+mail) if mail else "Undisclosed (NJ)","NJ withholds names (Daniel's Law)"+(" - buyer mailing address from tax roll" if mail else "")+(" Non-usable sale code "+sl(l,35,37)+"." if sl(l,35,37) not in ("","00") else ""),"",mail[:120],"","",int(sl(l,653,656)) if sl(l,653,656).isdigit() and int(sl(l,653,656))>1600 else None,"",None,pin.replace("_","/"),None,None,None,"NJ",None,None,None,None,None][:len(D["cols"])])
+            deals.append([dt,c_t[0]+" County",c_t[1],sl(l,298,322).title() or "Address not listed",{"4A":"Retail / commercial","4B":"Industrial","4C":"Multifamily 5+ units","1":"Vacant land / development"}[pc],pc,None,None,price,1,round(ll[0],5),round(ll[1],5),"",("Undisclosed - mail to "+mail) if mail else "Undisclosed (NJ)","NJ withholds names (Daniel's Law)"+(" - buyer mailing address from tax roll" if mail else "")+(" Non-usable sale code "+sl(l,35,37)+"." if sl(l,35,37) not in ("","00") else ""),"",mail[:120],"","",int(sl(l,653,656)) if sl(l,653,656).isdigit() and int(sl(l,653,656))>1600 else None,"",None,pin.replace("_","/"),None,None,None,"NJ",None,None,None,None,None][:len(D["cols"])])
     print(fn,"deals so far",len(deals),flush=True)
 json.dump({"cols":D["cols"],"rows":deals,"pulled":D.get("pulled")},open("site/data/NJ.json","w"),separators=(",",":"))
 print("NJ deals since 2020 (any price)",len(deals),flush=True)
