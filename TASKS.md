@@ -22,8 +22,10 @@ Every commercial property in NY (city + state), NJ, CT, FL, PA, TX, CA and MA, w
 - [ ] Check every job; on failure read the log, fix, relaunch by push.
 - [ ] Wire finished states into Property lookup picker (CT, NJ, FL, TX, MA when their files land).
 - [ ] Verify NYC ACRIS full history populated `debt`, `hist` and `site/props/hist/`.
-- [ ] Texas: add Tarrant, Collin, Denton, Travis, Williamson, Bexar, Fort Bend, Montgomery CADs.
-- [ ] California: add Orange, San Diego, Santa Clara, Alameda, San Francisco assessor rolls.
+- [ ] Texas: add Tarrant, Collin, Denton, Travis, Williamson, Bexar, Fort Bend, Montgomery CADs. Pattern = `tx_universe.py` (owner, mailing, deed date, appraised value, SF, units; Census geocode cached in tx_geo.json; write `site/props/TX_<County>.json` and append to `site/data/TX.json`).
+  - Tarrant: PropertyData-Commercial delimited (`|`) file from tad.org/resources/data-downloads.php (site blocks non-browser UAs — fetch from Actions with a browser UA; if blocked, use the ArcGIS parcel service `https://tad.newedgeservices.com/arcgis/rest/services/OD_TAD/OD_Parcels/MapServer/0` for TAXPIN→centroid and the PropertyData file for attributes). Layout doc: PropertyData&PropertyLocation.
+  - Travis (TCAD): traviscad.org → Public Information → appraisal roll export zip (fixed-width; layout PDF on same page). Bexar (BCAD): bcad.org → Data Downloads. Collin: collincad.org → Downloads. Denton: dentoncad.com/data-downloads (accessible). Fort Bend: fbcad.org → data downloads. Montgomery: mcad-tx.org → downloads. Williamson: wcad.org → data downloads. Most publish a "PACS export" zip (appraisal roll .txt + layout .pdf); parse with the layout.
+- [ ] California: add Orange, San Diego, Santa Clara, Alameda, San Francisco assessor rolls. Pattern = `ca_universe.py` (no owner names anywhere in CA public rolls; use base year / assessed value). Sources: Orange — ocgis parcels FeatureServer; San Diego — SanGIS parcels (SDGIS FeatureServer, use codes); Santa Clara — county open data parcels; Alameda — ACGOV parcels; SF — data.sfgov.org "Assessor Historical Secured Property Tax Rolls" (has use code, sqft, units, base year values; no names).
 - [ ] Florida 2020–2024 back-history from FGDL annual parcel files.
 - [ ] NY State: county deed sources for sale dates/prices (start with Nassau, Suffolk, Westchester).
 - [ ] Massachusetts Secretary of State principals for LLC owners.
