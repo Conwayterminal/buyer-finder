@@ -70,7 +70,7 @@ for f in files:
         mail=", ".join(v for v in [str(r.OWN_ADDR1 or "").strip().title(),str(r.OWN_CITY or "").strip().title(),str(r.OWN_STATE or "").strip()] if v and v.lower()!="nan")
         p={"id":r.key,"county":county,"town":str(r.PHY_CITY or "").strip().title() or county,"addr":str(r.PHY_ADDR1 or "").strip().title() or "Address not listed","zip":str(r.PHY_ZIPCD or "")[:5],"lat":ll[0],"lng":ll[1],"approx":ap,"type":UC[r.DOR_UC],"uc":r.DOR_UC,
            "owner":own[:100],"principals":people[:4],"mail":mail[:120],"llc":bool(ent.search(own)),"units":int(units) if units else None,"sf":int(sf) if sf else None,"yb":int(yb) if yb and yb>1600 else None,"lot":int(lot) if lot else None,"mkt":int(jv) if jv else None,
-           "sold":sold,"price":int(s1[2]) if s1[2] else None,"q":r.QUAL_CD1,"prior":f"{s2[0]}-{max(1,s2[1]):02d}-01" if s2[0]>1900 else None,"priorP":int(s2[2]) if s2[2] else None,"doc":(f"OR {r.OR_BOOK1}/{r.OR_PAGE1}" if isinstance(r.OR_BOOK1,str) and r.OR_BOOK1.strip() else "")}
+           "sold":sold,"price":int(s1[2]) if s1[2] else None,"q":(r.QUAL_CD1 if isinstance(r.QUAL_CD1,str) else ""),"prior":f"{s2[0]}-{max(1,s2[1]):02d}-01" if s2[0]>1900 else None,"priorP":int(s2[2]) if s2[2] else None,"doc":(f"OR {r.OR_BOOK1}/{r.OR_PAGE1}" if isinstance(r.OR_BOOK1,str) and r.OR_BOOK1.strip() else "")}
         P.append(p)
         for (yy,mm,pr) in (s1,s2):
             if yy>=2020 and pr and pr>0:
@@ -79,6 +79,12 @@ for f in files:
                 disp=(", ".join(people[:3])+" ("+own+")")[:150] if people and p["llc"] else own[:150]
                 conf=("FL Sunbiz officer(s)/manager(s) of the owner entity" if people and p["llc"] else ("Owner of record (county appraiser) - LLC, research" if p["llc"] else "Owner of record (county appraiser)"))+(" - location approximate" if ap else "")+(" - later resold; this is the prior sale" if (yy,mm,pr)==s2 else "")
                 deals.append([dt,county+" County",p["town"],p["addr"],p["type"],r.DOR_UC,p["units"],p["sf"],int(pr),2 if str(r.MULTI_PAR_SAL1 or "").upper() in ("Y","1") else 1,ll[0],ll[1],own[:150],disp,conf,"",mail[:120],"",own[:80],p["yb"],"",p["lot"],p["doc"],None,None,None,"FL",str(r.PARCEL_ID),None,({"biz":sb["biz"],"status":sb["status"],"mail":sb["mail"],"reg":sb["filed"],"principals":[f"{o['name']} ({o['title']})" if o["title"] else o["name"] for o in sb["officers"]][:6],"where":[],"agent":{"name":sb["ra"]["name"],"type":"","phone":"","email":"","addr":sb["ra"]["addr"]}} if sb else None),None,p["mkt"]][:ncols])
+    def clean(o):
+        if isinstance(o,float) and o!=o: return None
+        if isinstance(o,dict): return {k:clean(v) for k,v in o.items()}
+        if isinstance(o,list): return [clean(v) for v in o]
+        return o
+    P=clean(P); deals[:]=clean(deals)
     json.dump(P,open(f"site/props/FL_{county.replace(' ','_')}.json","w"),separators=(",",":"),allow_nan=False)
     print(county,"parcels",len(P),"deals total",len(deals),flush=True)
 json.dump({"cols":D["cols"],"rows":deals,"pulled":D.get("pulled")},open("site/data/FL.json","w"),separators=(",",":"))
