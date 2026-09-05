@@ -24,6 +24,7 @@ jobs:
           python3 pincus.py 1 || true
           python3 update.py --days 45 || true
           python3 dob_step.py 1200 || true
+          python3 nyc_sales_from_props.py || true
       - name: Save data
         run: |
           git config user.name "buyer-finder-bot"
