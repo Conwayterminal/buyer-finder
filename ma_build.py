@@ -1,32 +1,57 @@
-import pandas as pd, json, re
-d=pd.read_pickle("ma.pkl"); d=d[d.USE_CODE.astype(str)!="132"]
-d["dt"]=pd.to_datetime(d.LS_DATE,errors="coerce",format="%Y%m%d"); d["price"]=pd.to_numeric(d.LS_PRICE,errors="coerce")
+#!/usr/bin/env python3
+"""Actions job: every Massachusetts commercial parcel (all 351 towns) from MassGIS, with owner, last sale, building data.
+Writes site/props/MA_<townid-range>.json for property lookup and appends MA sales since 2020 to data.json/site/data/MA.json."""
+import requests, json, os, time, re, collections
+HERE=os.path.dirname(os.path.abspath(__file__)); os.chdir(HERE)
+U="https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0/query"
+W="(USE_CODE LIKE '3%' OR USE_CODE LIKE '4%' OR USE_CODE LIKE '0%' OR USE_CODE LIKE '11%' OR USE_CODE LIKE '12%' OR USE_CODE LIKE '105%') AND POLY_TYPE IN ('TAX','FEE')"
+F="LOC_ID,PROP_ID,MAP_PAR_ID,TOWN_ID,BLDG_VAL,LAND_VAL,TOTAL_VAL,FY,LOT_SIZE,LOT_UNITS,LS_DATE,LS_PRICE,LS_BOOK,LS_PAGE,USE_CODE,USE_DESC,SITE_ADDR,CITY,ZIP,OWNER1,OWN_ADDR,OWN_CITY,OWN_STATE,OWN_ZIP,ZONING,YEAR_BUILT,BLD_AREA,UNITS,STORIES,STYLE"
+rows=[];off=0
+while True:
+    try: r=requests.post(U,data={"where":W,"outFields":F,"returnGeometry":"false","returnCentroid":"true","outSR":"4326","resultOffset":off,"resultRecordCount":2000,"orderByFields":"OBJECTID","f":"json"},timeout=180).json()
+    except Exception as e: print("err",e,flush=True); time.sleep(5); continue
+    if "error" in r: print(r["error"],flush=True); time.sleep(5); continue
+    fs=r.get("features",[])
+    for f in fs:
+        a=f["attributes"]; c=f.get("centroid") or {}; a["lat"]=c.get("y"); a["lng"]=c.get("x"); rows.append(a)
+    off+=len(fs)
+    if off%20000==0: print(off,flush=True)
+    if len(fs)<2000: break
+print("MA parcels",len(rows),flush=True)
 def asset(uc,desc):
-    uc=str(uc); dsc=str(desc or "").upper()
-    if uc.startswith("111"): return "Multifamily 4-8 units"
-    if uc.startswith("112"): return "Multifamily 9+ units"
-    if uc in("109",): return "Multifamily (multiple houses)"
-    if uc.startswith("013") or uc.startswith("031"): return "Mixed-use"
-    if uc.startswith("130") or uc.startswith("131") or uc.startswith("39") or uc.startswith("44"): return "Vacant land / development"
-    if uc.startswith("4"): return "Industrial"
-    if uc.startswith("34"): return "Office"
-    if uc.startswith("30"): return "Hotel"
-    if uc.startswith("33") or uc.startswith("336"): return "Garage / parking"
+    u=str(uc or ""); d=str(desc or "").upper()
+    if u.startswith("11") or u.startswith("12") or "APART" in d: return "Multifamily 5+ units" if not u.startswith("111") else "Multifamily 4-8 units"
+    if u.startswith("105"): return "Small residential (3-4 family)"
+    if u.startswith("0"): return "Mixed-use"
+    if u.startswith("4"): return "Industrial"
+    if u.startswith("30") or "HOTEL" in d or "MOTEL" in d: return "Hotel"
+    if u.startswith("34") or "OFFICE" in d or "MEDICAL" in d: return "Office"
+    if u.startswith("39") or "VACANT" in d or "LAND" in d: return "Vacant land / development"
+    if u.startswith("33") or "GARAGE" in d or "PARK" in d: return "Garage / parking"
     return "Retail / commercial"
-ent=re.compile(r"\b(LLC|L\.?L\.?C|LP|LTD|CORP|INC|TRUST|TR\b|TRS|TRUSTEE|ASSOC|PARTNERS|HOLDINGS|REALTY|PROPERTIES|GROUP|COMPANY|LLLP|LLP|NOMINEE)",re.I)
-rows=[]; props=[]
-for r in d.itertuples():
-    if pd.isna(r.lat): continue
-    own=re.sub(r"\s+"," ",str(r.OWNER1 or "")).strip().title(); co=str(r.OWN_CO or "").strip().title() if isinstance(r.OWN_CO,str) else ""
-    mail=", ".join(v for v in [str(r.OWN_ADDR or "").strip().title(),str(r.OWN_CITY or "").strip().title(),str(r.OWN_STATE or "").strip()] if v and v.lower()!="nan")
-    a=asset(r.USE_CODE,r.USE_DESC); sf=int(r.BLD_AREA) if pd.notna(r.BLD_AREA) and r.BLD_AREA>0 else None; units=int(r.UNITS) if pd.notna(r.UNITS) and r.UNITS>0 else None
-    yb=int(r.YEAR_BUILT) if pd.notna(r.YEAR_BUILT) and r.YEAR_BUILT>1600 else None; lot=int(r.LOT_SIZE*43560) if pd.notna(r.LOT_SIZE) and r.LOT_SIZE>0 else None
-    conf=("Owner of record (MassGIS assessor) - LLC, research" if ent.search(own) else "Owner of record (MassGIS assessor)")
-    if co and ent.search(own): owner,conf=co+" ("+own+")","c/o on assessor roll (MassGIS)"
-    else: owner=own
-    st_=str(r.STORIES) if isinstance(r.STORIES,str) else (str(int(r.STORIES)) if pd.notna(r.STORIES) else "")
-    props.append({"id":r.LOC_ID,"addr":str(r.SITE_ADDR or "").title(),"city":str(r.CITY or "").title(),"zip":str(r.ZIP or "")[:5],"lat":round(r.lat,5),"lng":round(r.lng,5),"type":a,"uc":str(r.USE_CODE),"desc":str(r.USE_DESC or "")[:60],"owner":owner[:120],"ownRaw":own[:120],"mail":mail[:120],"units":units,"sf":sf,"stories":st_,"yb":yb,"lot":lot,"zone":str(r.ZONING or "")[:20] if isinstance(r.ZONING,str) else "","val":int(r.TOTAL_VAL) if pd.notna(r.TOTAL_VAL) else None,"bval":int(r.BLDG_VAL) if pd.notna(r.BLDG_VAL) else None,"lval":int(r.LAND_VAL) if pd.notna(r.LAND_VAL) else None,"sold":r.dt.strftime("%Y-%m-%d") if pd.notna(r.dt) else None,"price":int(r.price) if pd.notna(r.price) and r.price>0 else None,"book":f"{r.LS_BOOK}/{r.LS_PAGE}" if isinstance(r.LS_BOOK,str) else ""})
-    if pd.notna(r.dt) and r.dt>=pd.Timestamp("2020-09-01") and pd.notna(r.price) and r.price>0:
-        rows.append([r.dt.strftime("%Y-%m-%d"),"Massachusetts",str(r.CITY or "").title(),str(r.SITE_ADDR or "").title(),a,str(r.USE_CODE),units,sf,int(r.price),1,round(r.lat,5),round(r.lng,5),own[:150],owner[:150],conf+(" - nominal price, likely not arm's-length" if r.price<25000 else ""),"",mail[:120],"",own[:80],yb,str(r.ZONING or "")[:20] if isinstance(r.ZONING,str) else "",lot,f"Registry {r.LS_BOOK}/{r.LS_PAGE}" if isinstance(r.LS_BOOK,str) else "",None,None,None,"MA",None,None,None,None,int(r.TOTAL_VAL) if pd.notna(r.TOTAL_VAL) else None])
-json.dump(rows,open("rows.json","w"),separators=(",",":")); json.dump(props,open("props.json","w"),separators=(",",":"),allow_nan=False)
-import collections,os; print("MA deals",len(rows),"MA props",len(props),os.path.getsize("props.json")//1024//1024,"MB"); print(collections.Counter(x[4] for x in rows).most_common())
+ent=re.compile(r"\b(LLC|L\.?L\.?C|LP|LTD|CORP|INC|TRUST|TR\b|ASSOC|PARTNERS|HOLDINGS|REALTY|PROPERTIES|GROUP|COMPANY|LLP|NOMINEE)\b",re.I)
+def dt(s):
+    s=str(s or "");
+    return f"{s[:4]}-{s[4:6]}-{s[6:8]}" if len(s)==8 and s.isdigit() else None
+props=collections.defaultdict(list); deals=[]
+for a in rows:
+    if a.get("lat") is None: continue
+    own=str(a.get("OWNER1") or "").strip().title(); addr=str(a.get("SITE_ADDR") or "").strip().title(); town=str(a.get("CITY") or "").strip().title()
+    lot=a.get("LOT_SIZE"); lot_sf=int(lot*43560) if lot and str(a.get("LOT_UNITS"))=="A" else (int(lot) if lot else None)
+    sale=dt(a.get("LS_DATE")); price=a.get("LS_PRICE") or None
+    p={"id":a.get("LOC_ID"),"pid":a.get("PROP_ID"),"town":town,"tid":a.get("TOWN_ID"),"addr":addr,"zip":str(a.get("ZIP") or "")[:5],"lat":round(a["lat"],5),"lng":round(a["lng"],5),
+       "type":asset(a.get("USE_CODE"),a.get("USE_DESC")),"uc":a.get("USE_CODE"),"ucd":a.get("USE_DESC"),"owner":own[:100],"mail":", ".join(v for v in [str(a.get("OWN_ADDR") or "").title(),str(a.get("OWN_CITY") or "").title(),str(a.get("OWN_STATE") or "")] if v and v!="None")[:120],
+       "llc":bool(ent.search(own)),"units":a.get("UNITS"),"sf":a.get("BLD_AREA"),"stories":a.get("STORIES"),"yb":a.get("YEAR_BUILT"),"lot":lot_sf,"zone":a.get("ZONING"),"mkt":a.get("TOTAL_VAL"),"bv":a.get("BLDG_VAL"),"lv":a.get("LAND_VAL"),"fy":a.get("FY"),
+       "sold":sale,"price":int(price) if price else None,"book":a.get("LS_BOOK"),"page":a.get("LS_PAGE")}
+    props[int(a.get("TOWN_ID") or 0)//15].append(p)
+    if sale and sale>="2020-09-01" and price and price>0:
+        deals.append([sale,town,town,addr,p["type"],str(a.get("USE_CODE") or ""),int(a["UNITS"]) if a.get("UNITS") else None,int(a["BLD_AREA"]) if a.get("BLD_AREA") else None,int(price),1,p["lat"],p["lng"],own[:150],own[:150],"Owner of record (MassGIS assessor)"+(" - LLC, research" if p["llc"] else ""),"",p["mail"],"",own[:80],int(a["YEAR_BUILT"]) if a.get("YEAR_BUILT") else None,str(a.get("ZONING") or ""),lot_sf,f"Bk {a.get('LS_BOOK')} Pg {a.get('LS_PAGE')}" if a.get("LS_BOOK") else "",None,None,None,"MA",None,None,None,None,int(a["TOTAL_VAL"]) if a.get("TOTAL_VAL") else None])
+os.makedirs("site/props",exist_ok=True)
+for k,L in props.items(): json.dump(L,open(f"site/props/MA_{k:02d}.json","w"),separators=(",",":"),allow_nan=False)
+D=json.load(open("data.json")); C={k:i for i,k in enumerate(D["cols"])}
+deals=[d[:len(D["cols"])] for d in deals]
+D["rows"]=[r for r in D["rows"] if r[C["st"]]!="MA"]+deals
+json.dump(D,open("data.json","w"),separators=(",",":"))
+json.dump({"cols":D["cols"],"rows":deals,"pulled":D.get("pulled")},open("site/data/MA.json","w"),separators=(",",":"))
+towns=sorted({(p["tid"],p["town"]) for L in props.values() for p in L},key=lambda x:x[1]); json.dump(towns,open("site/props/MA_towns.json","w"))
+print("MA props",sum(len(v) for v in props.values()),"MA deals since 2020",len(deals),"shards",len(props),flush=True)
