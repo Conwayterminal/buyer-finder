@@ -62,14 +62,44 @@ def cls(pc,desc):
     if 460<=pc<=469: return "Office"
     if pc in (438,439,435): return "Garage / parking"
     return "Retail / commercial"
+geo=json.load(open("nys_geo.json")) if os.path.exists("nys_geo.json") else {}
+need=[]
+for i,r in enumerate(rows):
+    zn=zone_for.get(r["county_name"])
+    try: x=float(r.get("grid_coordinates_east") or 0); y=float(r.get("grid_coordinates_north") or 0)
+    except Exception: x=y=0
+    ok=False
+    if zn and x>0 and y>0:
+        lon,lat=T[zn].transform(x,y); ok=(40<lat<45.1 and -80<lon<-71.7)
+    if not ok:
+        k=f"{r.get('swis_code')}|{r.get('print_key_code')}"
+        if k not in geo and r.get("parcel_address_number") and addr(r): need.append((k,addr(r).replace('"',''),r.get("municipality_name",""),str(r.get("mailing_address_zip") or "")[:5]))
+print("to geocode",len(need),flush=True)
+for i in range(0,len(need),4000):
+    body="\n".join(f'{k},"{a}","{m}",NY,' for k,a,m,z in need[i:i+4000])
+    for attempt in range(3):
+        try:
+            rr=requests.post("https://geocoding.geo.census.gov/geocoder/locations/addressbatch",files={"addressFile":("a.csv",body)},data={"benchmark":"Public_AR_Current"},timeout=900)
+            for line in rr.text.splitlines():
+                p=next(csv.reader([line]))
+                if len(p)>=6 and p[2]=="Match": lon,lat=p[5].split(","); geo[p[0]]=[round(float(lat),5),round(float(lon),5)]
+            break
+        except Exception as e: print("geo err",e,flush=True); time.sleep(10)
+    json.dump(geo,open("nys_geo.json","w")); print("geocoded",len(geo),flush=True)
+mun_pts=collections.defaultdict(list)
 props=collections.defaultdict(list); n=0; skipped=0
 for r in rows:
     zn=zone_for.get(r["county_name"])
     try: x=float(r.get("grid_coordinates_east") or 0); y=float(r.get("grid_coordinates_north") or 0)
     except Exception: x=y=0
-    if not zn or x<=0 or y<=0: skipped+=1; continue
-    lon,lat=T[zn].transform(x,y)
-    if not (40<lat<45.1 and -80<lon<-71.7): skipped+=1; continue
+    lon=lat=None
+    if zn and x>0 and y>0:
+        lon,lat=T[zn].transform(x,y)
+        if not (40<lat<45.1 and -80<lon<-71.7): lon=lat=None
+    if lon is None:
+        g=geo.get(f"{r.get('swis_code')}|{r.get('print_key_code')}")
+        if g: lat,lon=g
+    if lon is None: skipped+=1; continue
     own=" ".join(v for v in [r.get("primary_owner_first_name",""),r.get("primary_owner_last_name","")] if v).strip().title()
     own2=" ".join(v for v in [r.get("additional_owner_1_first",""),r.get("additional_owner_1_last_name","")] if v).strip().title()
     mail=", ".join(v for v in [" ".join(w for w in [r.get("mailing_address_number",""),r.get("mailing_address_street",""),r.get("mailing_address_suff","")] if w).title() or ("PO Box "+r["mailing_address_po_box"] if r.get("mailing_address_po_box") else ""),str(r.get("mailing_address_city") or "").title(),r.get("mailing_address_state","")] if v)
