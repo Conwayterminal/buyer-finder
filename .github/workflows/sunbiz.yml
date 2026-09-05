@@ -1,0 +1,24 @@
+name: Florida Sunbiz officers
+on:
+  workflow_dispatch:
+  push:
+    paths: [fl_sunbiz.py]
+  schedule:
+    - cron: '0 12 15 1,4,7,10 *'   # quarterly refresh
+permissions:
+  contents: write
+jobs:
+  sunbiz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests paramiko
+      - run: python3 fl_sunbiz.py
+      - run: |
+          git config user.name "buyer-finder-bot"; git config user.email "bot@conwaypropertyadvisors.com"
+          git add data.json site/data fl_sunbiz.json && (git commit -m "Sunbiz officers $(date -u +%F)" && git push) || echo "no changes"
+          cd site && git init -b gh-pages && git config user.name b && git config user.email b@b.co && git add -A && git commit -qm publish && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
