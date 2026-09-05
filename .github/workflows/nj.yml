@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install requests
+      - run: pip install requests pandas
       - run: python3 nj_universe.py
       - run: |
           git config user.name "buyer-finder-bot"; git config user.email "bot@conwaypropertyadvisors.com"

@@ -102,3 +102,4 @@ for fn in files:
     print(fn,"deals so far",len(deals),flush=True)
 json.dump({"cols":D["cols"],"rows":deals,"pulled":D.get("pulled")},open("site/data/NJ.json","w"),separators=(",",":"))
 print("NJ deals since 2020 (any price)",len(deals),flush=True)
+# relaunch
