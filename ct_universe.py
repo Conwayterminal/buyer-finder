@@ -8,17 +8,26 @@ HERE=os.path.dirname(os.path.abspath(__file__)); os.chdir(HERE)
 U="https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer/FeatureServer/0/query"
 W="Model IN ('94.0','95.0','96.0','97.0','98.0','99.0','94','95','96','97') OR State_Use LIKE '2%' OR State_Use LIKE '3%' OR State_Use LIKE '105%' OR State_Use LIKE '4%' OR State_Use_Description LIKE '%APART%' OR State_Use_Description LIKE '%COMM%' OR State_Use_Description LIKE '%INDUST%' OR State_Use_Description LIKE '%MIX%' OR State_Use_Description LIKE '%RETAIL%' OR State_Use_Description LIKE '%OFFICE%' OR State_Use_Description LIKE '%STORE%' OR State_Use_Description LIKE '%WAREHOUSE%' OR State_Use_Description LIKE '%HOTEL%' OR State_Use_Description LIKE '%MULTI%'"
 F="Town_Name,Location,Property_City,ZIP_CODE,Owner,Co_Owner,Mailing_Address,Mailing_City,Mailing_State,Mailing_Zip,Sale_Price,Sale_Date,Prior_Sale_Date,Prior_Sale_Price,State_Use,State_Use_Description,Model,Living_Area,Effective_Area,Land_Acres,Zone,AYB,Assessed_Total,Appraised_Total,Occupancy,Parcel_ID,Link,Total_Rooms"
-rows=[];off=0
-while True:
-    try: r=requests.post(U,data={"where":W,"outFields":F,"f":"json","returnGeometry":"false","returnCentroid":"true","outSR":"4326","resultOffset":off,"resultRecordCount":2000,"orderByFields":"OBJECTID"},timeout=180).json()
-    except Exception as e: print("err",e,flush=True); time.sleep(5); continue
-    if "error" in r: print(r["error"],flush=True); time.sleep(5); continue
-    fs=r.get("features",[])
-    for f in fs:
-        a=f["attributes"]; c=f.get("centroid") or {}; a["lat"]=c.get("y"); a["lng"]=c.get("x"); rows.append(a)
-    off+=len(fs)
-    if off%20000==0: print(off,flush=True)
-    if len(fs)<2000: break
+# towns first, then query town by town (the statewide LIKE filter is too slow for the server)
+tj=requests.post(U,data={"where":"1=1","outFields":"Town_Name","returnDistinctValues":"true","returnGeometry":"false","f":"json"},timeout=180).json()
+towns=sorted({f["attributes"]["Town_Name"] for f in tj.get("features",[]) if f["attributes"].get("Town_Name")})
+print("towns",len(towns),flush=True)
+rows=[]
+for tn in towns:
+    off=0; fails=0
+    while True:
+        try: r=requests.post(U,data={"where":f"Town_Name='{tn.replace(chr(39),chr(39)*2)}' AND ({W})","outFields":F,"f":"json","returnGeometry":"false","returnCentroid":"true","outSR":"4326","resultOffset":off,"resultRecordCount":2000,"orderByFields":"OBJECTID"},timeout=180).json()
+        except Exception as e: fails+=1; print("err",tn,e,flush=True); time.sleep(5); 
+        else:
+            if "error" in r: fails+=1; print(tn,r["error"],flush=True); time.sleep(5)
+            else:
+                fs=r.get("features",[])
+                for f in fs:
+                    a=f["attributes"]; c=f.get("centroid") or {}; a["lat"]=c.get("y"); a["lng"]=c.get("x"); rows.append(a)
+                off+=len(fs)
+                if len(fs)<2000: break
+        if fails>5: break
+    print(tn,len(rows),flush=True)
 print("CT parcels",len(rows),flush=True)
 def cls(a):
     s=(str(a.get("State_Use_Description") or "")+" "+str(a.get("Occupancy") or "")).upper(); mdl=str(a.get("Model") or "").split(".")[0]; su=str(a.get("State_Use") or "")
