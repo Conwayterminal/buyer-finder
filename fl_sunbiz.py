@@ -53,11 +53,19 @@ def find(d,depth=0):
             if depth<3: out+=find(p,depth+1)
         else: out.append((p,a.st_size))
     return out
-files=find("/doc")
-q=[f for f in files if re.search(r"/cor/.*(quarterly|Quarterly|qtr).*",f[0]) or re.search(r"cordata.*\d\.txt$",f[0],re.I)]
+print("root:",sf.listdir("."))
+root=[d for d in sf.listdir(".")]
+files=[]
+for d in root:
+    try: files+=find(d if d.startswith("/") else "./"+d)
+    except Exception as e: print("skip",d,e)
+print("total files",len(files)); [print(" ",p,s) for p,s in files if "cor" in p.lower()][:0]
+q=[f for f in files if re.search(r"cor",f[0],re.I) and re.search(r"(quarter|qtr|cordata|Quarterly)",f[0],re.I)]
+print("cor-ish files:"); [print(" ",p,s) for p,s in files if "cor" in p.lower()]
 if not q: q=[f for f in files if "/cor" in f[0] and f[1]>50_000_000]
 print("candidate files",len(q)); [print(" ",p,s) for p,s in q[:12]]
 found={}
+checked=False
 for p,size in q:
     print("reading",p,size,flush=True)
     with sf.open(p,"rb") as fh:
@@ -69,6 +77,8 @@ for p,size in q:
             for rec in recs:
                 rec=rec.decode("latin1")
                 if len(rec)<600: continue
+                if not checked:
+                    checked=True; print("SAMPLE num=",repr(fld(rec,"COR_NUMBER")),"name=",repr(fld(rec,name_key))[:60],"off1=",repr(fld(rec,"OFF1_NAME"))[:50],"ra=",repr(fld(rec,"RA_NAME"))[:40],"len",len(rec),flush=True)
                 k=norm(fld(rec,name_key))
                 if k in targets and k not in found:
                     offs=[]
