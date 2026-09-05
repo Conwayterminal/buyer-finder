@@ -70,7 +70,10 @@ import zipfile
 q=[f for f in q if f[0].lower().endswith("cordata.zip") and "np" not in f[0].lower()]
 for p,size in q:
     local="/tmp/"+os.path.basename(p); print("downloading",p,size,flush=True)
-    sf.get(p,local); print("downloaded",os.path.getsize(local),flush=True)
+    import subprocess
+    rc=subprocess.run(["curl","-sS","-u","Public:PubAccess1845!","-o",local,"sftp://sftp.floridados.gov"+p.lstrip(".")],timeout=3000).returncode
+    if rc!=0 or not os.path.exists(local): print("curl failed",rc,"- paramiko fallback",flush=True); sf.get(p,local,prefetch=False)
+    print("downloaded",os.path.getsize(local),flush=True)
     with zipfile.ZipFile(local) as zf:
         for member in zf.namelist():
             print("member",member,flush=True)
