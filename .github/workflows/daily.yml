@@ -32,4 +32,4 @@ jobs:
           cd site && touch .nojekyll && git init -b gh-pages
           git config user.name "buyer-finder-bot"; git config user.email "bot@conwaypropertyadvisors.com"
           git add -A && git commit -qm "publish $(date -u +%F)"
-          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
+          for i in 1 2 3 4 5; do git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages && break || sleep $((i*20)); done

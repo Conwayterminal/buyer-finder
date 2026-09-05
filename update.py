@@ -151,5 +151,6 @@ html=open("template.html").read().replace("__COLS__",json.dumps(D["cols"]))
 os.makedirs("site",exist_ok=True); open("site/index.html","w").write(html); open("Conway_Buyer_Finder.html","w").write(html)
 print("rows now",len(D["rows"]),"->","site/index.html")
 # split per-market data files for the site
-for st in sorted(set(r[-1] for r in D["rows"])):
-    json.dump({"cols":D["cols"],"rows":[r for r in D["rows"] if r[-1]==st],"pulled":D["pulled"]},open(f"site/data/{st}.json","w"),separators=(",",":"))
+C2={k:i for i,k in enumerate(D["cols"])}
+for st in sorted(set(r[C2["st"]] for r in D["rows"] if r[C2["st"]])):
+    json.dump({"cols":D["cols"],"rows":[r for r in D["rows"] if r[C2["st"]]==st],"pulled":D["pulled"]},open(f"site/data/{st}.json","w"),separators=(",",":"))
