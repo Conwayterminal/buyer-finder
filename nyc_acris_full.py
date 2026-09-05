@@ -1,83 +1,90 @@
 #!/usr/bin/env python3
-"""Resumable, runs in GitHub Actions with a persistent cache dir (./acris_cache).
-Pulls EVERY ACRIS deed and mortgage since 2015 for all four boroughs (any price), the lots they attach to,
-and lender names; then rolls sales/debt onto every NYC commercial lot in site/props and every deal in data.json.
-Budget per run: ~5 hours. State: acris_cache/state.json + parquet parts."""
-import requests, pandas as pd, json, os, sys, time
-CACHE="acris_cache"; os.makedirs(CACHE,exist_ok=True)
-BUDGET=int(sys.argv[1]) if len(sys.argv)>1 else 17000
-t0=time.time(); left=lambda: BUDGET-(time.time()-t0)
-B="https://data.cityofnewyork.us/resource/"
-def q(ds,params,tries=6):
-    for a in range(tries):
-        try:
-            r=requests.get(B+ds+".json",params=params,timeout=300)
-            if r.status_code==200: return r.json()
-            print(ds,r.status_code,r.text[:120],flush=True)
-        except Exception as e: print("err",e,flush=True)
-        time.sleep(5*(a+1))
-    return None
-sp=os.path.join(CACHE,"state.json"); st=json.load(open(sp)) if os.path.exists(sp) else {"phase":"master","m_off":0,"l_idx":0,"p_idx":0}
-def save(): json.dump(st,open(sp,"w"))
-def append(name,rows):
-    if not rows: return
-    p=os.path.join(CACHE,name); df=pd.DataFrame(rows)
-    if os.path.exists(p): df=pd.concat([pd.read_parquet(p),df],ignore_index=True)
-    df.to_parquet(p,index=False)
-# ---- phase 1: master docs (deeds + mortgages since 2015), paged by 50k
-if st["phase"]=="master":
-    W="doc_type in('DEED','DEEDO','DEED, LE','DEED, TS','DEED, RC','MTGE','AGMT','ASST','SAT') AND document_date>='2015-01-01' AND recorded_borough in('1','2','3','4','5')"
-    while left()>600:
-        j=q("bnx9-e6tj",{"$where":W,"$select":"document_id,recorded_borough,doc_type,document_date,document_amt","$limit":50000,"$offset":st["m_off"],"$order":"document_id"})
-        if j is None: break
-        append("master.parquet",j); st["m_off"]+=len(j); save(); print("master",st["m_off"],flush=True)
-        if len(j)<50000: st["phase"]="legals"; save(); break
-# ---- phase 2: legals for all docs (BBL per doc)
-if st["phase"]=="legals":
-    ids=pd.read_parquet(os.path.join(CACHE,"master.parquet")).document_id.tolist(); n=len(ids)
-    buf=[]
-    while st["l_idx"]<n and left()>300:
-        ch=ids[st["l_idx"]:st["l_idx"]+500]
-        j=q("8h5j-fqxa",{"$where":"document_id in("+",".join("'%s'"%x for x in ch)+")","$select":"document_id,borough,block,lot,unit","$limit":50000})
-        if j is None: break
-        buf+=j; st["l_idx"]+=500
-        if len(buf)>200000: append("legals.parquet",buf); buf=[]; save(); print("legals",st["l_idx"],"/",n,flush=True)
-    append("legals.parquet",buf); save(); print("legals",st["l_idx"],"/",n,flush=True)
-    if st["l_idx"]>=n: st["phase"]="parties"; save()
-# ---- phase 3: parties (grantee for deeds, lender for mortgages)
-if st["phase"]=="parties":
-    m=pd.read_parquet(os.path.join(CACHE,"master.parquet")); ids=m.document_id.tolist(); n=len(ids)
-    buf=[]
-    while st["p_idx"]<n and left()>300:
-        ch=ids[st["p_idx"]:st["p_idx"]+500]
-        j=q("636b-3b5g",{"$where":"document_id in("+",".join("'%s'"%x for x in ch)+") AND party_type='2'","$select":"document_id,name,address_1,city","$limit":50000})
-        if j is None: break
-        buf+=j; st["p_idx"]+=500
-        if len(buf)>200000: append("parties.parquet",buf); buf=[]; save(); print("parties",st["p_idx"],"/",n,flush=True)
-    append("parties.parquet",buf); save(); print("parties",st["p_idx"],"/",n,flush=True)
-    if st["p_idx"]>=n: st["phase"]="build"; save()
-# ---- phase 4: build per-lot sales + debt and merge into props
-if st["phase"]=="build":
-    m=pd.read_parquet(os.path.join(CACHE,"master.parquet")); L=pd.read_parquet(os.path.join(CACHE,"legals.parquet")); P=pd.read_parquet(os.path.join(CACHE,"parties.parquet"))
-    for c in ["borough","block","lot"]: L[c]=pd.to_numeric(L[c],errors="coerce")
-    L=L[L.unit.isna()|(L.unit.astype(str).str.strip()=="")]; L["bbl"]=(L.borough*1e9+L.block*1e4+L.lot).round().astype("Int64")
-    m["document_date"]=pd.to_datetime(m.document_date,errors="coerce"); m["document_amt"]=pd.to_numeric(m.document_amt,errors="coerce")
-    G=P.groupby("document_id").name.agg(lambda x:" | ".join(sorted(set(str(v).strip().title() for v in x)))[:150]).rename("party2")
-    D=L.merge(m,on="document_id").merge(G,on="document_id",how="left").sort_values("document_date")
-    D.to_parquet(os.path.join(CACHE,"docs_by_lot.parquet"),index=False)
-    deeds=D[D.doc_type.str.startswith("DEED")&(D.document_amt>0)]; mtg=D[(D.doc_type=="MTGE")&(D.document_amt>0)]
-    lastdeed=deeds.groupby("bbl").tail(1).set_index("bbl"); ndeeds=deeds.groupby("bbl").size(); lastmtg=mtg.groupby("bbl").tail(1).set_index("bbl"); nmtg=mtg.groupby("bbl").size(); summtg=mtg[mtg.document_date>="2020-01-01"].groupby("bbl").document_amt.sum()
-    import glob
-    for f in glob.glob("site/props/NY_*.json"):
-        props=json.load(open(f)); hit=0
-        for p in props:
-            b=p["bbl"]
-            if b in lastdeed.index:
-                d=lastdeed.loc[b]; p["lastDeed"]=[d.document_date.strftime("%Y-%m-%d"),int(d.document_amt),d.party2 or ""]; p["nDeeds"]=int(ndeeds.get(b,0))
-                if not p.get("sold") and d.document_date>=pd.Timestamp("2020-09-01"): p["sold"]=p["lastDeed"][0]; p["price"]=p["lastDeed"][1]; p["buyer"]=p["buyer"] or (d.party2 or ""); p["conf"]=p["conf"] or "ACRIS deed grantee"
-                hit+=1
-            if b in lastmtg.index:
-                d=lastmtg.loc[b]; p["lastMtg"]=[d.document_date.strftime("%Y-%m-%d"),int(d.document_amt),d.party2 or ""]; p["nMtg"]=int(nmtg.get(b,0)); p["mtgSince2020"]=int(summtg.get(b,0))
-        json.dump(props,open(f,"w"),separators=(",",":"),allow_nan=False); print(f,"lots with deed",hit,flush=True)
-    st["phase"]="done"; save()
-print("phase",st["phase"],json.dumps({k:v for k,v in st.items()}))
+"""GitHub Actions job: every ACRIS deed and mortgage (any price) since 2010 on every NYC commercial lot.
+Downloads the three ACRIS bulk CSVs, filters to the 270k lots in props/, and writes per-lot histories
+sharded by borough+block into site/props/hist/. Also refreshes debt fields on the property cards."""
+import os, csv, json, sys, glob, subprocess, collections, time
+import pandas as pd
+HERE=os.path.dirname(os.path.abspath(__file__)); os.chdir(HERE)
+csv.field_size_limit(10**9)
+lots=set()
+for f in glob.glob("site/props/NY_*.json"):
+    for p in json.load(open(f)): lots.add(int(p["bbl"]))
+print("lots",len(lots),flush=True)
+def dl(vid,name):
+    if os.path.exists(name) and os.path.getsize(name)>10**8: return
+    url=f"https://data.cityofnewyork.us/api/views/{vid}/rows.csv?accessType=DOWNLOAD"
+    print("downloading",name,flush=True); subprocess.run(["curl","-sSL","-o",name,url],check=True); print("done",os.path.getsize(name)//10**6,"MB",flush=True)
+# 1) legals -> document ids on our lots
+dl("8h5j-fqxa","/tmp/legals.csv")
+docs={}  # document_id -> bbl
+t0=time.time()
+for ch in pd.read_csv("/tmp/legals.csv",usecols=["DOCUMENT ID","BOROUGH","BLOCK","LOT"],dtype=str,chunksize=2_000_000):
+    b=pd.to_numeric(ch.BOROUGH,errors="coerce"); bl=pd.to_numeric(ch.BLOCK,errors="coerce"); lo=pd.to_numeric(ch.LOT,errors="coerce")
+    bbl=(b*10**9+bl*10**4+lo)
+    m=bbl.isin(lots)
+    for d,x in zip(ch["DOCUMENT ID"][m],bbl[m]): docs.setdefault(d,int(x))
+    print("legals scanned; docs on our lots:",len(docs),round(time.time()-t0),flush=True)
+# 2) master -> keep deeds/mortgages/assignments/satisfactions since 2010
+dl("bnx9-e6tj","/tmp/master.csv")
+KEEP={"DEED","DEEDO","DEED, LE","DEED, TS","DEED, RC","MTGE","AGMT","ASST","SAT","AL&R","M&CON","ASPM","SPRD"}
+M={}
+for ch in pd.read_csv("/tmp/master.csv",usecols=["DOCUMENT ID","DOC. TYPE","DOC. DATE","DOC. AMOUNT","RECORDED / FILED"],dtype=str,chunksize=2_000_000):
+    ch=ch[ch["DOCUMENT ID"].isin(docs.keys())&ch["DOC. TYPE"].isin(KEEP)]
+    for r in ch.itertuples(index=False):
+        d=str(r[2] or "")[:10]; rec=str(r[4] or "")[:10]
+        # dates come as MM/DD/YYYY
+        def iso(s):
+            try: mm,dd,yy=s.split("/"); return f"{yy}-{mm}-{dd}"
+            except Exception: return ""
+        d=iso(d) or iso(rec)
+        if d<"2010-01-01": continue
+        try: amt=float(r[3])
+        except Exception: amt=0
+        M[r[0]]={"t":r[1],"d":d,"a":int(amt)}
+    print("master kept",len(M),flush=True)
+# 3) parties for those docs
+dl("636b-3b5g","/tmp/parties.csv")
+P=collections.defaultdict(lambda:{"1":[],"2":[]})
+for ch in pd.read_csv("/tmp/parties.csv",usecols=["DOCUMENT ID","PARTY TYPE","NAME","ADDRESS 1","CITY","STATE"],dtype=str,chunksize=2_000_000):
+    ch=ch[ch["DOCUMENT ID"].isin(M.keys())]
+    for r in ch.itertuples(index=False):
+        if r[1] in ("1","2") and isinstance(r[2],str): P[r[0]][r[1]].append([r[2].strip().title()[:80],", ".join(v for v in [str(r[3] or "").title(),str(r[4] or "").title(),str(r[5] or "")] if v and v!="Nan")[:100]])
+    print("parties kept",len(P),flush=True)
+# 4) per-lot history
+hist=collections.defaultdict(list)
+for doc,m in M.items():
+    bbl=docs.get(doc)
+    if bbl is None: continue
+    p=P.get(doc,{"1":[],"2":[]})
+    hist[bbl].append({"id":doc,"t":m["t"],"d":m["d"],"a":m["a"],"from":p["1"][:4],"to":p["2"][:4]})
+for v in hist.values(): v.sort(key=lambda x:x["d"])
+# open debt estimate: mortgages (MTGE/AGMT) not followed by a SAT of the same lender... approximate: sum of MTGE since last DEED, minus those with later SAT amount match
+def debt(h):
+    lastdeed=max([x["d"] for x in h if x["t"].startswith("DEED")],default="1900")
+    mt=[x for x in h if x["t"] in ("MTGE","AGMT") and x["d"]>=lastdeed]
+    sats=[x for x in h if x["t"]=="SAT" and x["d"]>=lastdeed]
+    open_=[]
+    for x in mt:
+        if any(s["d"]>x["d"] and abs(s["a"]-x["a"])<=1 for s in sats): continue
+        open_.append(x)
+    return open_
+shards=collections.defaultdict(dict)
+for bbl,h in hist.items():
+    shards[f"NY_{bbl//10**9}_{(bbl//10**4)%10**5//100}"][str(bbl)]=h
+os.makedirs("site/props/hist",exist_ok=True)
+for k,v in shards.items(): json.dump(v,open(f"site/props/hist/{k}.json","w"),separators=(",",":"))
+print("shards",len(shards),"lots with history",len(hist),flush=True)
+# 5) refresh card fields: last deed at any price, open debt, debt/sf
+for f in glob.glob("site/props/NY_*.json"):
+    L=json.load(open(f)); n=0
+    for p in L:
+        h=hist.get(int(p["bbl"]))
+        if not h: continue
+        deeds=[x for x in h if x["t"].startswith("DEED") and x["d"]>="2020-01-01"]
+        if deeds and (not p.get("sold") or deeds[-1]["d"]>p["sold"]):
+            ld=deeds[-1]; p["sold"]=ld["d"]; p["price"]=ld["a"] or None; p["nsales"]=len(deeds)
+            if not p.get("buyer") and ld["to"]: p["buyer"]=", ".join(x[0] for x in ld["to"][:2]); p["conf"]="Deed grantee (ACRIS)"
+        od=debt(h); p["debt"]=sum(x["a"] for x in od) if od else 0; p["debtN"]=len(od)
+        p["lender"]=od[-1]["to"][0][0] if od and od[-1]["to"] else None; p["debtD"]=od[-1]["d"] if od else None
+        p["hist"]=len(h); n+=1
+    json.dump(L,open(f,"w"),separators=(",",":"),allow_nan=False); print(f,"updated",n,flush=True)
