@@ -5,6 +5,9 @@ on:
     paths: [fl_sunbiz.py]
   schedule:
     - cron: '0 12 15 1,4,7,10 *'   # quarterly refresh
+concurrency:
+  group: sunbiz
+  cancel-in-progress: true
 permissions:
   contents: write
 jobs:

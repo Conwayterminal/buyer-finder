@@ -50,8 +50,6 @@ os.makedirs("site/props",exist_ok=True)
 for k,L in props.items(): json.dump(L,open(f"site/props/MA_{k:02d}.json","w"),separators=(",",":"),allow_nan=False)
 D=json.load(open("data.json")); C={k:i for i,k in enumerate(D["cols"])}
 deals=[d[:len(D["cols"])] for d in deals]
-D["rows"]=[r for r in D["rows"] if r[C["st"]]!="MA"]+deals
-json.dump(D,open("data.json","w"),separators=(",",":"))
 json.dump({"cols":D["cols"],"rows":deals,"pulled":D.get("pulled")},open("site/data/MA.json","w"),separators=(",",":"))
 towns=sorted({(p["tid"],p["town"]) for L in props.values() for p in L},key=lambda x:x[1]); json.dump(towns,open("site/props/MA_towns.json","w"))
 print("MA props",sum(len(v) for v in props.values()),"MA deals since 2020",len(deals),"shards",len(props),flush=True)

@@ -5,6 +5,9 @@ on:
     paths: [ct_universe.py]
   schedule:
     - cron: '0 12 * * 1'
+concurrency:
+  group: ct
+  cancel-in-progress: true
 permissions:
   contents: write
 jobs:

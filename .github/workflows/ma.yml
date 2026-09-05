@@ -5,6 +5,9 @@ on:
     paths: [ma_build.py]
   schedule:
     - cron: '0 11 * * 1'   # weekly
+concurrency:
+  group: ma
+  cancel-in-progress: true
 permissions:
   contents: write
 jobs:

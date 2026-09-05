@@ -64,8 +64,6 @@ for a in rows:
         deals.append(row[:len(D["cols"])])
 os.makedirs("site/props",exist_ok=True)
 for k,L in props.items(): json.dump(L,open(f"site/props/CT_{k}.json","w"),separators=(",",":"),allow_nan=False)
-D["rows"]=[r for r in D["rows"] if r[C["st"]]!="CT"]+deals
-json.dump(D,open("data.json","w"),separators=(",",":"))
 json.dump({"cols":D["cols"],"rows":deals,"pulled":D.get("pulled")},open("site/data/CT.json","w"),separators=(",",":"))
 json.dump(sorted({(p["town"][:1],p["town"]) for L in props.values() for p in L},key=lambda x:x[1]),open("site/props/CT_towns.json","w"))
 print("CT props",sum(len(v) for v in props.values()),"CT deals since 2020 (any price)",len(deals),flush=True)

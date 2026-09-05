@@ -5,6 +5,9 @@ on:
     paths: [nyc_acris_full.py]
   schedule:
     - cron: '0 8 1 * *'   # monthly, when the city refreshes ACRIS open data
+concurrency:
+  group: acris_full
+  cancel-in-progress: true
 permissions:
   contents: write
 jobs:

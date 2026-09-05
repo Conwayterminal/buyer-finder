@@ -74,5 +74,4 @@ for r in D["rows"]:
 print("rows with DOB contacts",hit)
 json.dump(D,open("data.json","w"),separators=(",",":"))
 os.makedirs("site/data",exist_ok=True)
-for s2 in sorted(set(r[C["st"]] for r in D["rows"])):
-    json.dump({"cols":D["cols"],"rows":[r for r in D["rows"] if r[C["st"]]==s2],"pulled":D.get("pulled")},open(f"site/data/{s2}.json","w"),separators=(",",":"))
+json.dump({"cols":D["cols"],"rows":[r for r in D["rows"] if r[C["st"]]=="NY"],"pulled":D.get("pulled")},open("site/data/NY.json","w"),separators=(",",":"))
