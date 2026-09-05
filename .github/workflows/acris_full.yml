@@ -1,6 +1,8 @@
 name: NYC ACRIS full universe
 on:
   workflow_dispatch:
+  push:
+    paths: [nyc_acris_full.py, .github/workflows/acris_full.yml]
   schedule:
     - cron: '30 2 * * *'   # nightly until done, then monthly refresh handled by phase reset
 permissions:
