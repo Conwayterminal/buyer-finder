@@ -55,3 +55,5 @@ json.dump(D,open("data.json","w"),separators=(",",":"))
 json.dump({"cols":D["cols"],"rows":deals,"pulled":D.get("pulled")},open("site/data/MA.json","w"),separators=(",",":"))
 towns=sorted({(p["tid"],p["town"]) for L in props.values() for p in L},key=lambda x:x[1]); json.dump(towns,open("site/props/MA_towns.json","w"))
 print("MA props",sum(len(v) for v in props.values()),"MA deals since 2020",len(deals),"shards",len(props),flush=True)
+
+# launch

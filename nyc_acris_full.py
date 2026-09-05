@@ -88,3 +88,5 @@ for f in glob.glob("site/props/NY_*.json"):
         p["lender"]=od[-1]["to"][0][0] if od and od[-1]["to"] else None; p["debtD"]=od[-1]["d"] if od else None
         p["hist"]=len(h); n+=1
     json.dump(L,open(f,"w"),separators=(",",":"),allow_nan=False); print(f,"updated",n,flush=True)
+
+# launch

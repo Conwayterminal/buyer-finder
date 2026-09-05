@@ -61,3 +61,5 @@ for f in glob.glob("site/props/NY_*.json"):
         p["dobc"]=out; n+=1
     json.dump(L,open(f,"w"),separators=(",",":"),allow_nan=False)
 print("props with DOB contacts",n,flush=True)
+
+# launch

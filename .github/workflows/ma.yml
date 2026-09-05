@@ -1,6 +1,8 @@
 name: Massachusetts statewide
 on:
   workflow_dispatch:
+  push:
+    paths: [ma_build.py]
   schedule:
     - cron: '0 11 * * 1'   # weekly
 permissions:

@@ -1,6 +1,8 @@
 name: Connecticut statewide
 on:
   workflow_dispatch:
+  push:
+    paths: [ct_universe.py]
   schedule:
     - cron: '0 12 * * 1'
 permissions:

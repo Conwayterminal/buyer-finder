@@ -1,6 +1,8 @@
 name: NYC DOB owner contacts (all lots)
 on:
   workflow_dispatch:
+  push:
+    paths: [nyc_dob_full.py]
   schedule:
     - cron: '0 9 * * 0'   # weekly
 permissions:
