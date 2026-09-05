@@ -72,6 +72,8 @@ for p in range(1,pages+1):
         print("+",dt,buyer,"|",addr or nbhd,"|",price)
 D["pulled"]=date.today().isoformat()
 json.dump(D,open("data.json","w"),separators=(",",":"))
-h=open("template.html").read().replace("__DATA__",json.dumps(D,separators=(",",":")).replace("</","<\\/"))
+h=open("template.html").read().replace("__COLS__",json.dumps(D["cols"]))
 os.makedirs("site",exist_ok=True); open("site/index.html","w").write(h); open("Conway_Buyer_Finder.html","w").write(h)
 print("added",added,"rows",len(D["rows"]))
+for st in sorted(set(r[-1] for r in D["rows"])):
+    json.dump({"cols":D["cols"],"rows":[r for r in D["rows"] if r[-1]==st],"pulled":D["pulled"]},open(f"site/data/{st}.json","w"),separators=(",",":"))

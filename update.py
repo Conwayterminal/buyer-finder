@@ -147,6 +147,9 @@ if len(m):
 # 2) resale / refi refresh for existing rows: new MTGE & DEED docs in window on any tracked BBL
 D["pulled"]=date.today().isoformat()
 json.dump(D,open("data.json","w"),separators=(",",":"))
-html=open("template.html").read().replace("__DATA__",json.dumps(D,separators=(",",":")).replace("</","<\\/"))
+html=open("template.html").read().replace("__COLS__",json.dumps(D["cols"]))
 os.makedirs("site",exist_ok=True); open("site/index.html","w").write(html); open("Conway_Buyer_Finder.html","w").write(html)
 print("rows now",len(D["rows"]),"->","site/index.html")
+# split per-market data files for the site
+for st in sorted(set(r[-1] for r in D["rows"])):
+    json.dump({"cols":D["cols"],"rows":[r for r in D["rows"] if r[-1]==st],"pulled":D["pulled"]},open(f"site/data/{st}.json","w"),separators=(",",":"))
