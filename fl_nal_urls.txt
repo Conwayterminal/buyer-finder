@@ -1,0 +1,67 @@
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Walton 76 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Suwannee 71 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Brevard 15 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Hendry 36 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Gadsden 30 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Palm Beach 60 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Holmes 40 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Dixie 25 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Charlotte 18 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Duval 26 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Escambia 27 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Hillsborough 39 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Taylor 72 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Orange 58 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Jefferson 43 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Union 73 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Bradford 14 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Glades 32 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Flagler 28 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Monroe 54 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Dade 23 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Alachua 11 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Collier 21 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Calhoun 17 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Bay 13 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Levy 48 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Volusia 74 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Indian River 41 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Lake 45 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Nassau 55 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Martin 53 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Gulf 33 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Madison 50 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Marion 52 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Sumter 70 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/DeSoto 24 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Manatee 51 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Citrus 19 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Saint Johns 65 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Wakulla 75 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Clay 20 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Osceola 59 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Okaloosa 56 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Seminole 58 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Hernando 37 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Washington 77 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Liberty 49 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Lee 46 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Franklin 29 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Polk 63 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Leon 47 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Hardee 35 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Highlands 38 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Columbia 22 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Putnam 64 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Saint Lucie 66 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Sarasota 68 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Lafayette 44 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Pinellas 62 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Broward Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Baker 12 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Hamilton 34 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Gilchrist 31 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Santa Rosa 67 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Pasco 61 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Okeechobee 57 Preliminary NAL 2026.zip
+/property/dataportal/Documents/PTO Data Portal/Tax Roll Data Files/NAL/2026P/Jackson 42 Preliminary NAL 2026.zip
