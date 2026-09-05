@@ -10,11 +10,17 @@ def norm(n):
     n=n.upper().replace("&"," AND "); n=re.sub(r"[^A-Z0-9 ]"," ",n); n=re.sub(r"\b(THE)\b","",n)
     n=re.sub(r"\bL L C\b|\bLLC\b|\bLIMITED LIABILITY (COMPANY|CO)\b","LLC",n); n=re.sub(r"\bINCORPORATED\b","INC",n); n=re.sub(r"\bCORPORATION\b","CORP",n)
     return re.sub(r"\s+"," ",n).strip()
+import glob
 fl=[r for r in D["rows"] if r[C["st"]]=="FL"]
 targets={}
 for r in fl:
     o=r[C["owner"]]
     if re.search(r"\b(LLC|L\.?L\.?C|LP|LTD|CORP|INC|TRUST|ASSOC|PARTNERS|HOLDINGS|REALTY|PROPERTIES|GROUP|COMPANY|LLLP|LLP)\b",o.upper()): targets.setdefault(norm(o),[]).append(r)
+# every LLC owner in the full Florida property layer too
+for f in glob.glob("site/props/FL_*.json"):
+    if "counties" in f: continue
+    for p in json.load(open(f)):
+        if p.get("llc") and p.get("owner"): targets.setdefault(norm(p["owner"]),[])
 print("FL entity owners to resolve",len(targets))
 # --- field definitions
 defs=None
@@ -108,5 +114,17 @@ for k,rs in targets.items():
         if people and "LLC" in r[C["conf"]]:
             r[C["owner"]]=(", ".join(people[:3])+" ("+r[C["grantee"]]+")")[:150]; r[C["conf"]]="FL Sunbiz officer(s)/manager(s) of the owner entity"; up+=1
 print("FL rows upgraded",up)
+np_=0
+for f in glob.glob("site/props/FL_*.json"):
+    if "counties" in f: continue
+    L=json.load(open(f))
+    for p in L:
+        if not p.get("llc"): continue
+        fo=found.get(norm(p["owner"]))
+        if fo:
+            p["principals"]=[o["name"] for o in fo["officers"] if o["name"] and not re.search(r"\b(LLC|INC|CORP|TRUST|COMPANY|LP)\b",o["name"].upper())][:4]
+            p["reg"]={"biz":fo["biz"],"status":fo["status"],"mail":fo["mail"],"principals":[f"{o['name']} ({o['title']})" if o["title"] else o["name"] for o in fo["officers"]][:6],"agent":{"name":fo["ra"]["name"],"addr":fo["ra"]["addr"]}}; np_+=1
+    json.dump(L,open(f,"w"),separators=(",",":"),allow_nan=False)
+print("FL props with Sunbiz principals",np_)
 json.dump(D,open("data.json","w"),separators=(",",":"))
 json.dump({"cols":D["cols"],"rows":[r for r in D["rows"] if r[C["st"]]=="FL"],"pulled":D.get("pulled")},open("site/data/FL.json","w"),separators=(",",":"))
