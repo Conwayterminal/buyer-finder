@@ -300,7 +300,8 @@ $('exportR').onclick=()=>{const rows=[['Buyer','Deals in database','Total bought
   const csv=rows.map(a=>a.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='buyer_research.csv';a.click()};
 // ---------- property lookup ----------
 const PROPS={};
-async function loadProps(b){if(PROPS[b])return PROPS[b];$('pstatus').textContent='Loading '+b+'…';const r=await fetch('props/'+b+'.json');PROPS[b]=await r.json();return PROPS[b]}
+let PIDX=null;
+async function loadProps(b){if(PROPS[b])return PROPS[b];$('pstatus').textContent='Loading '+b.replace(/_/g,' ')+'…';let files=[b+'.json'];if(b.startsWith('NY_')){if(!PIDX){try{PIDX=await (await fetch('props/index_NY.json')).json()}catch(e){PIDX={}}}files=PIDX[b.slice(3)]||files}const parts=await Promise.all(files.map(f=>fetch('props/'+f).then(r=>r.json())));PROPS[b]=parts.flat();return PROPS[b]}
 let MA_TOWNS=null;
 async function setPropState(){const st=$('pstate').value;const sel=$('pboro');if(st==='NY'){$('pboroLbl').textContent='Borough';sel.innerHTML=['Manhattan','Brooklyn','Queens','Bronx','Staten Island'].map(b=>`<option value="NY_${b.replace(' ','_')}">${b}</option>`).join('');$('paddr').placeholder='e.g. 143 Ludlow St  or  1004090014';$('pstatus').textContent='Pick a borough and type an address or BBL. Every commercial lot in NYC is here — 269,761 of them.'}
   else{$('pboroLbl').textContent='Town';if(!MA_TOWNS){try{MA_TOWNS=await (await fetch('props/MA_towns.json')).json()}catch(e){MA_TOWNS=[]}}sel.innerHTML=MA_TOWNS.length?MA_TOWNS.map(([tid,n])=>`<option value="MA_${String(Math.floor(tid/15)).padStart(2,'0')}|${n}">${n}</option>`).join(''):'<option>Massachusetts data loading — check back shortly</option>';$('paddr').placeholder='e.g. 100 Main St';$('pstatus').textContent='Pick a town and type an address. Every commercial parcel in Massachusetts — all 351 towns.'}}
