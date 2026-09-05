@@ -7,6 +7,8 @@
 a{color:var(--blue)}button{font:inherit;cursor:pointer}input,select{font:inherit;color:var(--ink)}
 header{background:var(--ink);color:#fff;padding:22px 24px 26px}
 header h1{margin:0 0 4px;font-size:22px;font-weight:600;letter-spacing:-.01em}header p{margin:0;color:#b8c1cc;font-size:13px}
+.modes{display:flex;gap:6px;margin-top:14px}.modes button{border:1px solid #4a5568;background:transparent;color:#b8c1cc;border-radius:7px;padding:7px 14px;font-size:13px}.modes button.on{background:#fff;color:var(--ink);border-color:#fff;font-weight:600}
+.card{padding:14px}.card h3{margin:0;font-size:19px;font-weight:600}.card h4{margin:14px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--slate)}.kv3{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px 14px;font-size:13px}.kv3 div b{display:block;font-weight:600}.kv3 div span{color:var(--slate);font-size:11.5px}.flag{display:inline-block;padding:3px 8px;border-radius:6px;font-size:12px;margin:2px 4px 2px 0}.flag.bad{background:var(--red-soft);color:var(--red)}.flag.ok{background:var(--green-soft);color:var(--green)}.flag.warn{background:var(--amber-soft);color:var(--amber)}
 .search{background:#fff;color:var(--ink);border-radius:10px;padding:14px;margin-top:16px;display:grid;grid-template-columns:1.1fr 2.2fr .8fr 1.2fr .9fr auto;gap:10px;align-items:end}
 .search label{display:block;font-size:12px;color:var(--slate);margin-bottom:4px}
 .search input,.search select{width:100%;border:1px solid var(--line);border-radius:7px;padding:10px 11px;font-size:15px;background:#fff}
@@ -66,7 +68,8 @@ tr.row:hover td{background:#f7f9fb}tr.row{cursor:pointer}
 <header>
 <h1>Conway Buyer Finder</h1>
 <p id="tagline">Who bought near a deal, what they paid, and what kind of buyer they are. Every commercial sale of $500k+ since September 2020 — New York City (all recorded deeds, with lenders), Connecticut (all 169 towns, owner of record) New Jersey (every SR-1A deed sale, all 21 counties) Florida (all 67 counties, owner of record from the appraiser rolls) Texas (Harris and Dallas counties — no disclosed prices), Philadelphia (OPA, buyer and price) and Los Angeles County (assessor roll — transfer year and estimated price, no buyer names).</p>
-<div class="search">
+<div class="modes"><button class="on" data-mode="buyers">Buyer search</button><button data-mode="props">Property lookup</button></div>
+<div class="search" id="buyerSearch">
 <div><label for="market">Market</label><select id="market"><option value="NY">New York City</option><option value="CT">Connecticut</option><option value="NJ">New Jersey</option><option value="FL">Florida</option><option value="TX">Texas (Houston, Dallas)</option><option value="PA">Pennsylvania (Philadelphia)</option><option value="CA">California (Los Angeles County)</option></select></div>
 <div class="wide"><label for="addr">Deal address or neighborhood / town</label><input id="addr" placeholder="e.g. 30-15 Steinway St, Astoria  or  Astoria, Queens" autocomplete="off"></div>
 <div><label for="units">Units</label><input id="units" type="number" min="0" placeholder="8"></div>
@@ -74,6 +77,7 @@ tr.row:hover td{background:#f7f9fb}tr.row{cursor:pointer}
 <div><label for="radius">Radius</label><select id="radius"><option value="0.5">½ mile</option><option value="1" selected>1 mile</option><option value="2">2 miles</option><option value="5">5 miles</option><option value="nbhd">Same neighborhood</option></select></div>
 <button class="go" id="go">Find buyers</button>
 </div>
+<div class="search" id="propSearch" style="display:none;grid-template-columns:1fr 2.6fr auto"><div><label for="pboro">Borough</label><select id="pboro"><option>Manhattan</option><option>Brooklyn</option><option>Queens</option><option>Bronx</option><option>Staten Island</option></select></div><div><label for="paddr">Address or BBL</label><input id="paddr" placeholder="e.g. 143 Ludlow St  or  1004090014" autocomplete="off"></div><button class="go" id="pgo">Look up</button></div>
 <div style="margin-top:10px;font-size:12px;color:#b8c1cc;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span id="keyState">Research: not connected</span><button class="chip" id="keyBtn" style="background:transparent;color:#fff;border-color:#4a5568">Set API key</button><button class="chip" id="pdBtn" style="background:transparent;color:#fff;border-color:#4a5568">Set Pipedrive token</button><span>Needed only for the Research button when opened in a browser.</span></div>
 </header>
 <main>
@@ -86,6 +90,7 @@ tr.row:hover td{background:#f7f9fb}tr.row{cursor:pointer}
 <span style="flex:1"></span><button class="chip" id="csv">Export CSV</button>
 </div>
 <div class="stats" id="stats"></div>
+<div id="propMain" style="display:none"><p class="status" id="pstatus">Pick a borough and type an address or BBL. Every commercial lot in NYC is here — 269,761 of them.</p><div class="layout open" id="playout"><div class="panel"><h2>Matches <span class="sub" id="pcount"></span></h2><div class="scroll" id="plist"></div></div><div class="panel" id="pcard"><div class="empty">No property selected.</div></div></div></div>
 <div class="layout" id="layout">
 <div class="panel">
 <div class="tabs"><button class="on" data-tab="deals">Deals</button><button data-tab="buyers">Top buyers</button><span style="flex:1"></span><button id="batch" title="Runs Research on every buyer in the current list, top down, and saves results in this browser">Research all shown</button><button id="exportR" title="Download all saved research as CSV">Export research</button></div>
@@ -170,7 +175,7 @@ function filterRows(){
   if(S.conf==='nopd')rows=rows.filter(r=>!g(r,'pd')&&!isLLC(r));
   return rows;
 }
-const lenderName=l=>/^mers$|mortgage electronic/i.test(l||'')?'MERS (nominee — lender not disclosed)':l;
+const lenderName=l=>l?(/^mers$|mortgage electronic/i.test(l)?'MERS (nominee)':l):'—';const _ln=l=>/^mers$|mortgage electronic/i.test(l||'')?'MERS (nominee — lender not disclosed)':l;
 function finCell(r){const a=g(r,'acq'),s=g(r,'sold'),f=g(r,'refi');let h='';
   if(g(r,'st')!=='NY'&&!a)return '<span class="muted">n/a</span>';if(a)h+=`<div>${esc(lenderName(a[0]))}</div><div class="muted">${fmt$(a[1])}${a[2]?' · '+Math.round(a[2]*100)+'% of price':''}</div>`;else h+='<div class="muted">All cash / no loan found</div>';
   if(f)h+=`<div class="muted">Refi ${f[2].slice(0,7)} ${fmt$(f[1])}</div>`;
@@ -293,6 +298,33 @@ async function researchQuiet(r,deals){const k=ownerKey(r);const ctx=deals.slice(
   const t=(j.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();if(t){cache[k]=t;store.set('research-cache',JSON.stringify(cache))}}
 $('exportR').onclick=()=>{const rows=[['Buyer','Deals in database','Total bought','Research']];for(const [k,txt] of Object.entries(cache)){const ds=byOwner.get(k)||[];rows.push([ds[0]?g(ds[0],'owner'):k,ds.length,ds.reduce((a,x)=>a+(g(x,'nlots')===1?g(x,'price'):0),0),txt])}
   const csv=rows.map(a=>a.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='buyer_research.csv';a.click()};
+// ---------- property lookup ----------
+const PROPS={};
+async function loadProps(b){if(PROPS[b])return PROPS[b];$('pstatus').textContent='Loading '+b+' lots…';const r=await fetch('props/NY_'+b.replace(' ','_')+'.json');PROPS[b]=await r.json();return PROPS[b]}
+function setMode(m){document.querySelectorAll('.modes button').forEach(x=>x.classList.toggle('on',x.dataset.mode===m));$('buyerSearch').style.display=m==='buyers'?'':'none';$('propSearch').style.display=m==='props'?'':'none';$('propMain').style.display=m==='props'?'':'none';['status','filters','stats','layout'].forEach(id=>$(id).style.display=m==='buyers'?'':'none')}
+document.querAll=document.querySelectorAll.bind(document);document.querySelectorAll('.modes button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+const normAddr=s=>String(s||'').toUpperCase().replace(/\./g,'').replace(/\bSTREET\b/g,'ST').replace(/\bAVENUE\b/g,'AVE').replace(/\bBOULEVARD\b/g,'BLVD').replace(/\bROAD\b/g,'RD').replace(/\bPLACE\b/g,'PL').replace(/\bEAST\b/g,'E').replace(/\bWEST\b/g,'W').replace(/\bNORTH\b/g,'N').replace(/\bSOUTH\b/g,'S').replace(/(\d+)(ST|ND|RD|TH)\b/g,'$1').replace(/\s+/g,' ').trim();
+$('pgo').onclick=async()=>{const b=$('pboro').value,q=$('paddr').value.trim();if(!q)return;const P=await loadProps(b);let hits=[];
+  if(/^\d{10}$/.test(q))hits=P.filter(p=>String(p.bbl)===q);
+  else{const nq=normAddr(q);hits=P.filter(p=>normAddr(p.addr).startsWith(nq));if(!hits.length)hits=P.filter(p=>normAddr(p.addr).includes(nq));
+    if(!hits.length){const loc=await geocode(q+', '+b+', New York, NY').catch(()=>null);if(loc){P.forEach(p=>p._d=dist(loc.lat,loc.lng,p.lat,p.lng));hits=[...P].sort((a,c)=>a._d-c._d).slice(0,25)}}}
+  $('pstatus').textContent=`${hits.length.toLocaleString()} lot${hits.length===1?'':'s'} matched in ${b}.`;$('pcount').textContent=hits.length>60?'showing 60':'';
+  $('plist').innerHTML=hits.slice(0,60).map((p,i)=>`<div class="row" style="padding:9px 12px;border-bottom:1px solid #eef0f3;cursor:pointer" data-i="${i}"><b>${esc(p.addr)}</b> <span class="muted">${p.zip}</span><div class="muted">${esc(p.type)} · ${p.bc} · ${p.units?p.units+' units · ':''}${p.sf?fmtN(p.sf)+' sf · ':''}BBL ${p.bbl}${p._d!=null?' · '+(p._d*5280).toFixed(0)+' ft':''}</div>${p.sold?`<div class="muted">Last sale ${p.sold} ${fmt$(p.price)} → ${esc(p.buyer)}</div>`:''}</div>`).join('')||'<div class="empty">Nothing matched. Try a shorter address (number + street) or the BBL.</div>';
+  $('plist').querySelectorAll('.row').forEach(el=>el.onclick=()=>showProp(hits[+el.dataset.i]));if(hits.length===1)showProp(hits[0])};
+$('paddr').addEventListener('keydown',e=>{if(e.key==='Enter')$('pgo').click()});
+function showProp(p){const psf=p.price&&p.sf?Math.round(p.price/p.sf):null,ppu=p.price&&p.units?Math.round(p.price/p.units):null,mpsf=p.acq&&p.sf?Math.round(p.acq[1]/p.sf):null;
+  const kv=(o)=>Object.entries(o).filter(([k,v])=>v!==null&&v!==undefined&&v!=='').map(([k,v])=>`<div><b>${v}</b><span>${k}</span></div>`).join('');
+  const deals=p.buyer?(byOwner.get(String(p.buyer).toUpperCase().trim())||[]):[];
+  $('pcard').innerHTML=`<div class="card"><h3>${esc(p.addr)}</h3><div class="muted">${p.boro} ${p.zip} · BBL ${p.bbl} · CD ${p.cd||'—'} · <a target="_blank" href="https://zola.planning.nyc.gov/l/lot/${String(p.bbl)[0]}/${String(p.bbl).slice(1,6)}/${String(p.bbl).slice(6)}">ZoLa</a> · <a target="_blank" href="https://a836-acris.nyc.gov/bblsearch/bblsearch.asp?borough=${String(p.bbl)[0]}&block=${+String(p.bbl).slice(1,6)}&lot=${+String(p.bbl).slice(6)}">ACRIS</a> · <a target="_blank" href="https://a810-bisweb.nyc.gov/bisweb/PropertyProfileOverviewServlet?boro=${String(p.bbl)[0]}&block=${+String(p.bbl).slice(1,6)}&lot=${+String(p.bbl).slice(6)}">DOB</a> · <a target="_blank" href="https://hpdonline.nyc.gov/hpdonline/building/search-results?boroughId=${String(p.bbl)[0]}&block=${+String(p.bbl).slice(1,6)}&lot=${+String(p.bbl).slice(6)}">HPD</a></div>
+  <div style="margin:10px 0">${p.hpd?`<span class="flag bad">${p.hpd} open HPD violations</span>`:'<span class="flag ok">No open HPD violations</span>'}${p.dob?`<span class="flag bad">${p.dob} active DOB</span>`:''}${p.ecb?`<span class="flag bad">${p.ecb} ECB · ${fmt$(p.ecbDue)} due</span>`:''}${p.lien?`<span class="flag warn">Tax-lien list ${p.lien.slice(0,7)}</span>`:''}${p.sold?`<span class="flag ok">Sold ${p.sold}</span>`:'<span class="flag warn">No sale since 2020 — long-term owner</span>'}</div>
+  <h4>Building</h4><div class="kv3">${kv({'Type':esc(p.type)+' ('+p.bc+')','Tax class':p.tc,'Res units':p.units,'Total units':p.unitsT,'Gross SF':p.sf&&fmtN(p.sf),'Residential SF':p.resA&&fmtN(p.resA),'Commercial SF':p.comA&&fmtN(p.comA),'Office SF':p.offA&&fmtN(p.offA),'Retail SF':p.retA&&fmtN(p.retA),'Stories':p.stories,'Year built':p.yb,'Last altered':p.alt,'Lot SF':p.lot&&fmtN(p.lot),'Lot dimensions':p.lotF&&p.lotD?p.lotF+' × '+p.lotD+' ft':null,'Building dimensions':p.bF&&p.bD?p.bF+' × '+p.bD+' ft':null,'Zoning':esc(p.zone),'Built FAR / max':p.far!=null?p.far+' / '+(p.maxFar||'—'):null,'Land use':p.lu})}</div>
+  <h4>Value & taxes (2026/27 roll)</h4><div class="kv3">${kv({'DOF market value':fmt$(p.mkt),'Assessed value':fmt$(p.av),'Taxable value':fmt$(p.txb),'Est. annual tax':p.tax&&fmt$(p.tax),'Tax / SF':p.tax&&p.sf?'$'+(p.tax/p.sf).toFixed(2):null})}</div>
+  <h4>Ownership</h4><div class="kv3">${kv({'Owner on tax roll':esc(p.owner),'Buyer (resolved)':p.buyer&&esc(p.buyer),'Source':p.conf&&esc(p.conf),'Last sale':p.sold,'Price':p.price&&fmt$(p.price),'Purchase $/SF':psf&&'$'+psf,'Purchase $/unit':ppu&&fmt$(ppu),'Sales since 2020':p.nsales||null})}</div>
+  ${p.acq?`<h4>Debt</h4><div class="kv3">${kv({'Acquisition lender':esc(lenderName(p.acq[0])),'Loan':fmt$(p.acq[1]),'Loan-to-price':p.acq[2]?Math.round(p.acq[2]*100)+'%':null,'Mortgage $/SF':mpsf&&'$'+mpsf,'Latest refi':p.refi?p.refi[2]+' · '+fmt$(p.refi[1])+' · '+esc(lenderName(p.refi[0])):null})}</div>`:(p.sold?'<h4>Debt</h4><div class="muted">No acquisition mortgage recorded within 4 months of the deed — cash or seller-financed.</div>':'')}
+  ${p.dobc&&p.dobc.length?`<h4>Contacts from DOB permit filings</h4><ul class="tl">${p.dobc.slice(0,4).map(f=>`<li><span class="d">${f[0]}</span><span><b>${esc(f[1]||'—')}</b>${f[2]?' · '+esc(f[2]):''}${f[3]?`<div class="muted">${esc(f[3])}</div>`:''}</span><span class="muted">${esc(f[4]||'')}</span></li>`).join('')}</ul>`:''}
+  ${p.pd?`<div class="style mid"><b>In Pipedrive</b>${p.pd.map(m=>`<div><a target="_blank" href="https://app.pipedrive.com/person/${m.id}">${esc(m.name)}</a>${m.al?` · <a target="_blank" href="${esc(m.al)}">Aloware</a>`:''} <span class="muted">${esc(m.via)}</span></div>`).join('')}</div>`:(p.buyer?'<div class="style na"><b>Not in Pipedrive</b>Skip-trace candidate.</div>':'')}
+  <div class="links">${deals.length?`<button class="primary" id="openBuyer">Open buyer profile (${deals.length} deal${deals.length>1?'s':''})</button>`:''}<a target="_blank" href="https://www.google.com/search?q=${encodeURIComponent((p.buyer||p.owner)+' '+p.addr+' New York')}">Google owner</a><a target="_blank" href="https://www.pincusco.com/?s=${encodeURIComponent(p.addr)}">PincusCo</a></div></div>`;
+  const ob=$('openBuyer');if(ob)ob.onclick=async()=>{setMode('buyers');await loadMarket('NY');openProfile(deals[0])}}
 // ---------- wiring ----------
 $('go').onclick=async()=>{await loadMarket(MK());const q=$('addr').value;$('go').disabled=true;$('status').textContent='Locating…';
   if(!q.trim()){S.lat=null;S.label='';S.nbhd=null;S.boro=null}else{const loc=await geocode(q);if(!loc){$('status').textContent='Could not place that address. Try "number street, neighborhood" or just the neighborhood name.';$('go').disabled=false;return}S.lat=loc.lat;S.lng=loc.lng;S.label=loc.label;S.nbhd=loc.nbhd||null;S.boro=loc.boro||null;if(loc.approx&&$('radius').value!=='nbhd'&&!/\d/.test(q))$('radius').value='nbhd'}
