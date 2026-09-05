@@ -127,5 +127,5 @@ for f in glob.glob("site/props/FL_*.json"):
     json.dump(L,open(f,"w"),separators=(",",":"),allow_nan=False)
 print("FL props with Sunbiz principals",np_)
 json.dump(D,open("data.json","w"),separators=(",",":"))
-json.dump({"cols":D["cols"],"rows":[r for r in D["rows"] if r[C["st"]]=="FL"],"pulled":D.get("pulled")},open("site/data/FL.json","w"),separators=(",",":"))
+# site/data/FL.json is owned by fl_universe.py
 # relaunch 1788636359

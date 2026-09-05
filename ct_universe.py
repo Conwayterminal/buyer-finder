@@ -7,7 +7,7 @@ import requests, json, os, time, re, collections
 HERE=os.path.dirname(os.path.abspath(__file__)); os.chdir(HERE)
 U="https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer/FeatureServer/0/query"
 W="Model IN ('94.0','95.0','96.0','97.0','98.0','99.0','94','95','96','97') OR State_Use LIKE '2%' OR State_Use LIKE '3%' OR State_Use LIKE '105%' OR State_Use LIKE '4%' OR State_Use_Description LIKE '%APART%' OR State_Use_Description LIKE '%COMM%' OR State_Use_Description LIKE '%INDUST%' OR State_Use_Description LIKE '%MIX%' OR State_Use_Description LIKE '%RETAIL%' OR State_Use_Description LIKE '%OFFICE%' OR State_Use_Description LIKE '%STORE%' OR State_Use_Description LIKE '%WAREHOUSE%' OR State_Use_Description LIKE '%HOTEL%' OR State_Use_Description LIKE '%MULTI%'"
-F="Town_Name,Location,Property_City,ZIP_CODE,Owner,Co_Owner,Mailing_Address,Mailing_City,Mailing_State,Mailing_Zip,Sale_Price,Sale_Date,Prior_Sale_Date,Prior_Sale_Price,State_Use,State_Use_Description,Model,Living_Area,Effective_Area,Land_Acres,Zone,AYB,Assessed_Total,Appraised_Total,Occupancy,Parcel_ID,Link,Total_Rooms"
+F="Town_Name,Location,Property_City,ZIP_CODE,Owner,Co_Owner,Mailing_Address,Mailing_City,Mailing_State,Mailing_Zip,Sale_Price,Sale_Date,Prior_Sale_Date,Prior_Sale_Price,State_Use,State_Use_Description,Model,Living_Area,Effective_Area,Land_Acres,Zone,AYB,Assessed_Total,Appraised_Building,Appraised_Land,Appraised_Outbuilding,Occupancy,Parcel_ID,Link"
 # towns first, then query town by town (the statewide LIKE filter is too slow for the server)
 tj=requests.post(U,data={"where":"1=1","outFields":"Town_Name","returnDistinctValues":"true","returnGeometry":"false","f":"json"},timeout=180).json()
 towns=sorted({f["attributes"]["Town_Name"] for f in tj.get("features",[]) if f["attributes"].get("Town_Name")})
@@ -64,12 +64,12 @@ for a in rows:
     sf=a.get("Effective_Area") or a.get("Living_Area"); mail=", ".join(v for v in [str(a.get("Mailing_Address") or "").title(),str(a.get("Mailing_City") or "").title(),str(a.get("Mailing_State") or "")] if v and v!="None")
     sale=pdate(a.get("Sale_Date")); price=a.get("Sale_Price"); reg=reg_by_owner.get(own.upper())
     p={"id":a.get("Parcel_ID"),"town":town,"addr":addr,"zip":str(a.get("ZIP_CODE") or "")[:5],"lat":round(a["lat"],5),"lng":round(a["lng"],5),"type":t,"uc":a.get("State_Use"),"ucd":a.get("State_Use_Description"),"owner":own[:100],"mail":mail[:120],"llc":bool(ent.search(own)),
-       "sf":int(sf) if sf else None,"lot":int(float(a["Land_Acres"])*43560) if a.get("Land_Acres") else None,"yb":a.get("AYB"),"zone":a.get("Zone"),"mkt":a.get("Appraised_Total"),"av":a.get("Assessed_Total"),"sold":sale,"price":int(price) if price else None,"prior":pdate(a.get("Prior_Sale_Date")),"priorP":a.get("Prior_Sale_Price"),"card":a.get("Link"),"reg":reg}
+       "sf":int(sf) if sf else None,"lot":int(float(a["Land_Acres"])*43560) if a.get("Land_Acres") else None,"yb":a.get("AYB"),"zone":a.get("Zone"),"mkt":((a.get("Appraised_Building") or 0)+(a.get("Appraised_Land") or 0)+(a.get("Appraised_Outbuilding") or 0)) or None,"av":a.get("Assessed_Total"),"sold":sale,"price":int(price) if price else None,"prior":pdate(a.get("Prior_Sale_Date")),"priorP":a.get("Prior_Sale_Price"),"card":a.get("Link"),"reg":reg}
     props[town[:1] or "_"].append(p)
     if sale and sale>="2020-09-01" and price and price>0:
         conf=("CT business registry principal(s) of the owner LLC" if reg and reg.get("principals") else ("Owner of record (assessor) - LLC, research" if p["llc"] else "Owner of record (assessor)"))
         owner_disp=(", ".join(x.split(" (")[0] for x in reg["principals"][:3])+" ("+own+")")[:150] if reg and reg.get("principals") and p["llc"] else own[:150]
-        row=[sale,"Connecticut",town,addr,t,str(a.get("State_Use") or ""),None,p["sf"],int(price),1,p["lat"],p["lng"],own[:150],owner_disp,conf,"",mail[:120],"",own[:80],int(a["AYB"]) if a.get("AYB") and a["AYB"]>1600 else None,str(a.get("Zone") or ""),p["lot"],str(a.get("Link") or ""),None,None,None,"CT",None,None,reg,None,int(a["Appraised_Total"]) if a.get("Appraised_Total") else None]
+        row=[sale,"Connecticut",town,addr,t,str(a.get("State_Use") or ""),None,p["sf"],int(price),1,p["lat"],p["lng"],own[:150],owner_disp,conf,"",mail[:120],"",own[:80],int(a["AYB"]) if a.get("AYB") and a["AYB"]>1600 else None,str(a.get("Zone") or ""),p["lot"],str(a.get("Link") or ""),None,None,None,"CT",None,None,reg,None,p["mkt"]]
         deals.append(row[:len(D["cols"])])
 os.makedirs("site/props",exist_ok=True)
 for k,L in props.items(): json.dump(L,open(f"site/props/CT_{k}.json","w"),separators=(",",":"),allow_nan=False)
