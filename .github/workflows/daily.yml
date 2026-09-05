@@ -26,7 +26,7 @@ jobs:
           git config user.name "buyer-finder-bot"
           git config user.email "bot@conwaypropertyadvisors.com"
           git add data.json site/index.html site/data dob_state.json nyc_bbls.json
-          git commit -m "Daily refresh $(date -u +%F)" && git push || echo "no changes"
+          (git commit -m "Daily refresh $(date -u +%F)" && git pull --rebase -X theirs && git push) || echo "no changes"
       - name: Publish site
         run: |
           cd site && touch .nojekyll && git init -b gh-pages
