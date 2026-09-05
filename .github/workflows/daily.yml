@@ -3,6 +3,8 @@ on:
   schedule:
     - cron: '0 10 * * *'   # 6:00 am ET every day
   workflow_dispatch:
+  push:
+    branches: [main]
 permissions:
   contents: write
   pages: write
@@ -24,6 +26,8 @@ jobs:
         run: |
           git config user.name "buyer-finder-bot"; git config user.email "bot@conwaypropertyadvisors.com"
           git add data.json site/index.html && (git commit -m "Daily refresh $(date -u +%F)" && git push) || echo "no changes"
+      - uses: actions/configure-pages@v5
+        with: { enablement: true }
       - uses: actions/upload-pages-artifact@v3
         with: { path: site }
   deploy:
