@@ -29,7 +29,7 @@ jobs:
           git config user.name "buyer-finder-bot"
           git config user.email "bot@conwaypropertyadvisors.com"
           git add data.json site/index.html site/data dob_state.json nyc_bbls.json
-          git commit -m "Daily refresh $(date -u +%F)" || echo "no changes"; for i in 1 2 3 4 5 6; do git pull --rebase -X theirs && git push && break || sleep 20; done
+          git commit -m "Daily refresh $(date -u +%F)" || echo "no changes"; for i in 1 2 3 4 5 6; do git -c merge.renames=false -c diff.renames=false pull --rebase -X theirs && git push && break || sleep 20; done
       - name: Publish site
         run: |
           cd site && touch .nojekyll && git init -b gh-pages

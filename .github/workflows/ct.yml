@@ -23,5 +23,5 @@ jobs:
       - run: python3 ct_universe.py
       - run: |
           git config user.name "buyer-finder-bot"; git config user.email "bot@conwaypropertyadvisors.com"
-          git add data.json site && git commit -m "Connecticut universe $(date -u +%F)" || echo "no changes"; for i in 1 2 3 4 5 6; do git pull --rebase -X theirs && git push && break || sleep 20; done
+          git add data.json site && git commit -m "Connecticut universe $(date -u +%F)" || echo "no changes"; for i in 1 2 3 4 5 6; do git -c merge.renames=false -c diff.renames=false pull --rebase -X theirs && git push && break || sleep 20; done
           for i in 1 2 3; do rm -rf /tmp/pub && cp -r site /tmp/pub && (cd /tmp/pub && git init -q -b gh-pages && git config user.name b && git config user.email b@b.co && git add -A && git commit -qm publish && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages) && break || sleep 15; done; true
