@@ -1,17 +1,12 @@
 name: Daily refresh
 on:
   schedule:
-    - cron: '0 10 * * *'   # 6:00 am ET every day
+    - cron: '0 10 * * *'   # 6:00 am ET, every day incl. weekends
   workflow_dispatch:
   push:
     branches: [main]
 permissions:
   contents: write
-  pages: write
-  id-token: write
-concurrency:
-  group: pages
-  cancel-in-progress: false
 jobs:
   refresh:
     runs-on: ubuntu-latest
@@ -25,22 +20,15 @@ jobs:
         run: |
           python3 pincus.py 1 || true
           python3 update.py --days 45 || true
-      - name: Commit data
+      - name: Save data
         run: |
+          git config user.name "buyer-finder-bot"
+          git config user.email "bot@conwaypropertyadvisors.com"
+          git add data.json site/index.html
+          git commit -m "Daily refresh $(date -u +%F)" && git push || echo "no changes"
+      - name: Publish site
+        run: |
+          cd site && touch .nojekyll && git init -b gh-pages
           git config user.name "buyer-finder-bot"; git config user.email "bot@conwaypropertyadvisors.com"
-          git add data.json site/index.html && (git commit -m "Daily refresh $(date -u +%F)" && git push) || echo "no changes"
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-  deploy:
-    needs: refresh
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          git add -A && git commit -qm "publish $(date -u +%F)"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
