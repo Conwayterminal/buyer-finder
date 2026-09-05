@@ -60,7 +60,9 @@ for f in files:
         own=str(r.OWN_NAME or "").strip().title(); k=norm(own); sb=sunbiz.get(k)
         people=[o["name"] for o in sb["officers"] if o["name"] and not re.search(r"\b(LLC|INC|CORP|TRUST|COMPANY|LP)\b",o["name"].upper())] if sb else []
         def num(x):
-            try: return float(x)
+            try:
+                v=float(x)
+                return None if v!=v else v
             except Exception: return None
         sf=num(r.TOT_LVG_AREA); units=num(r.NO_RES_UNTS); yb=num(r.ACT_YR_BLT); lot=num(r.LND_SQFOOT); jv=num(r.JV)
         s1=(int(num(r.SALE_YR1) or 0),int(num(r.SALE_MO1) or 0),num(r.SALE_PRC1)); s2=(int(num(r.SALE_YR2) or 0),int(num(r.SALE_MO2) or 0),num(r.SALE_PRC2))

@@ -50,3 +50,4 @@ os.makedirs("site/props",exist_ok=True)
 json.dump(P,open("site/props/PA_Philadelphia.json","w"),separators=(",",":"),allow_nan=False)
 json.dump({"cols":D["cols"],"rows":deals,"pulled":D.get("pulled")},open("site/data/PA.json","w"),separators=(",",":"))
 print("PA props",len(P),"deals since 2020 any price",len(deals),"with open violations",sum(1 for p in P if p["viol"]),flush=True)
+# relaunch
