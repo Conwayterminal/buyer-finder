@@ -379,13 +379,23 @@
 "note": "Marion County (Indianapolis): owner, mailing, property class, assessed values."
 },
 "OH": {
-"name": "Ohio (Cuyahoga County)",
+"name": "Ohio (Cuyahoga, Franklin)",
 "areaLabel": "County",
 "areas": [
 "Cuyahoga"
 ],
 "props": 34345,
 "deals": 7032,
-"note": "Cuyahoga County (Cleveland): owner, mailing, land use, zoning, last transfer date and amount, values."
+"note": "Cuyahoga (Cleveland) and Franklin (Columbus) counties: owner, mailing, use, sale date and price, values."
+},
+"MI": {
+"name": "Michigan (Detroit)",
+"areaLabel": "City",
+"areas": [
+"Detroit"
+],
+"props": 37365,
+"deals": 6920,
+"note": "Detroit: taxpayer of record, mailing, class, use, zoning, SF, year built, sale date and price, assessed values."
 }
 }
