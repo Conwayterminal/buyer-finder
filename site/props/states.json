@@ -359,14 +359,14 @@
 "note": "NC OneMap has owner, mailing, use, value and sale date; sale prices are not in the statewide layer."
 },
 "GA": {
-"name": "Georgia (Fulton County)",
+"name": "Georgia (Johns Creek)",
 "areaLabel": "County",
 "areas": [
-"Fulton"
+"Johns Creek"
 ],
 "props": 547,
 "deals": 0,
-"note": "Fulton County (Atlanta): owner, mailing, land use, class, living units, appraised values. Other counties to follow."
+"note": "Johns Creek (north Fulton) only so far \u2014 the city publishes owner-level parcels; Fulton County's own service is not public. Atlanta/Fulton to be added from the county's data download."
 },
 "IN": {
 "name": "Indiana (Marion County)",
