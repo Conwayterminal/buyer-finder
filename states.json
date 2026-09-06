@@ -375,7 +375,7 @@
    {
     "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/MapServer/0",
     "page": 3000,
-    "where": "CLASSCD LIKE 'C%' OR CLASSCD LIKE 'I%' OR CLASSCD LIKE 'M%' OR CLASSCD LIKE 'U%' OR (PCLASS>=300 AND PCLASS<500)",
+    "where": "PCLASS IN ('C','I','M','U') OR CLASSCD LIKE '4%' OR CLASSCD LIKE '3%'",
     "fields": {
      "id": "PARCELID",
      "owner": "OWNERNME1",
@@ -384,8 +384,8 @@
      "mailcity": "PSTLCITYSTZIP",
      "addr": "SITEADDRESS",
      "zip": "ZIPCD",
-     "use": "PCLASS",
-     "usedesc": "PCLASSDSCRP",
+     "use": "CLASSCD",
+     "usedesc": "PCLASS",
      "mkt": "TOTVALUEBASE",
      "lot": "ACRES",
      "sf": "BLDGAREA",
@@ -399,6 +399,21 @@
   ],
   "classify": [
    {
+    "prefix": [
+     "401",
+     "402",
+     "403",
+     "404",
+     "405",
+     "406",
+     "407",
+     "408",
+     "409",
+     "41"
+    ],
+    "type": "Multifamily 5+ units"
+   },
+   {
     "regex": "APART|UNIT",
     "type": "Multifamily 5+ units"
    },
@@ -409,12 +424,36 @@
     "type": "Industrial"
    },
    {
+    "prefix": [
+     "447",
+     "448",
+     "449"
+    ],
+    "type": "Office"
+   },
+   {
     "regex": "OFFICE",
     "type": "Office"
    },
    {
+    "prefix": [
+     "416",
+     "417",
+     "418"
+    ],
+    "type": "Hotel"
+   },
+   {
     "regex": "HOTEL|MOTEL",
     "type": "Hotel"
+   },
+   {
+    "prefix": [
+     "400",
+     "300",
+     "500"
+    ],
+    "type": "Vacant land / development"
    },
    {
     "regex": "VAC",
