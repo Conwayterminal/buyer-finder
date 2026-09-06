@@ -6,7 +6,7 @@
   "point_layer": true,
   "page": 5000,
   "order": "objectid",
-  "where": "(parusecode IS NOT NULL AND (UPPER(parusedesc) LIKE '%COMM%' OR UPPER(parusedesc) LIKE '%APART%' OR UPPER(parusedesc) LIKE '%INDUST%' OR UPPER(parusedesc) LIKE '%OFFICE%' OR UPPER(parusedesc) LIKE '%RETAIL%' OR UPPER(parusedesc) LIKE '%WAREHOUSE%' OR UPPER(parusedesc) LIKE '%HOTEL%' OR UPPER(parusedesc) LIKE '%MOTEL%' OR UPPER(parusedesc) LIKE '%MULTI%' OR UPPER(parusedesc) LIKE '%MIXED%' OR UPPER(parusedesc) LIKE '%STORE%' OR UPPER(parusedesc) LIKE '%SHOP%' OR UPPER(parusedesc) LIKE '%RESTAURANT%' OR UPPER(parusedesc) LIKE '%MANUFACT%'))",
+  "where": "parusedesc LIKE '%COMM%' OR parusedesc LIKE '%APART%' OR parusedesc LIKE '%INDUST%' OR parusedesc LIKE '%OFFICE%' OR parusedesc LIKE '%RETAIL%' OR parusedesc LIKE '%WAREHOUSE%' OR parusedesc LIKE '%HOTEL%' OR parusedesc LIKE '%MOTEL%' OR parusedesc LIKE '%MULTI%' OR parusedesc LIKE '%MIXED%' OR parusedesc LIKE '%STORE%' OR parusedesc LIKE '%SHOP%' OR parusedesc LIKE '%RESTAURANT%' OR parusedesc LIKE '%MANUFACT%' OR parusedesc LIKE '%Comm%' OR parusedesc LIKE '%Apart%' OR parusedesc LIKE '%Indust%' OR parusedesc LIKE '%Office%' OR parusedesc LIKE '%Retail%' OR parusedesc LIKE '%Warehouse%' OR parusedesc LIKE '%Hotel%' OR parusedesc LIKE '%Multi%' OR parusedesc LIKE '%Mixed%'",
   "fields": {
    "id": "parno",
    "owner": "ownname",
@@ -58,7 +58,8 @@
     "regex": ".",
     "type": "Retail / commercial"
    }
-  ]
+  ],
+  "partition": "cntyname"
  },
  "DC": {
   "name": "District of Columbia",
@@ -210,6 +211,7 @@
     "regex": ".",
     "type": "Retail / commercial"
    }
-  ]
+  ],
+  "partition": "co_name"
  }
 }

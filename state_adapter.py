@@ -36,18 +36,35 @@ def num(v):
         x=float(v); return None if x!=x else x
     except Exception: return None
 U=cfg["url"]+"/query"; F=",".join(sorted({x for v in cfg["fields"].values() for x in (v if isinstance(v,list) else [v])}))
-rows=[]; off=0; page=cfg.get("page",2000); point=cfg.get("point_layer",False)
-while True:
+rows=[]; page0=cfg.get("page",2000); point=cfg.get("point_layer",False)
+parts=[None]
+if cfg.get("partition"):
+    pf=cfg["partition"]
     try:
-        r=requests.post(U,data={"where":cfg["where"],"outFields":F,"f":"json","returnGeometry":"true" if point else "false","returnCentroid":"false" if point else "true","outSR":"4326","resultOffset":off,"resultRecordCount":page,"orderByFields":cfg.get("order","OBJECTID")},timeout=300).json()
-    except Exception as e: print("err",e,flush=True); time.sleep(5); continue
-    if "error" in r: print(r["error"],flush=True); time.sleep(5); page=max(500,page//2); continue
-    fs=r.get("features",[])
-    for f in fs:
-        a=f["attributes"]; c=f.get("geometry") if point else f.get("centroid"); c=c or {}; a["_lat"]=c.get("y"); a["_lng"]=c.get("x"); rows.append(a)
-    off+=len(fs)
-    if off%20000<page: print(off,flush=True)
-    if len(fs)<page: break
+        pj=requests.post(U,data={"where":"1=1","outFields":pf,"returnDistinctValues":"true","returnGeometry":"false","f":"json"},timeout=300).json()
+        parts=sorted({f["attributes"][pf] for f in pj.get("features",[]) if f["attributes"].get(pf)})
+    except Exception as e: print("partition list failed",e,flush=True)
+    print("partitions",len(parts),flush=True)
+for part in parts:
+    where=cfg["where"] if part is None else f"{cfg['partition']}='{str(part).replace(chr(39),chr(39)*2)}' AND ({cfg['where']})"
+    off=0; page=page0; errs=0
+    while True:
+        try:
+            r=requests.post(U,data={"where":where,"outFields":F,"f":"json","returnGeometry":"true" if point else "false","returnCentroid":"false" if point else "true","outSR":"4326","resultOffset":off,"resultRecordCount":page,"orderByFields":cfg.get("order","OBJECTID")},timeout=300).json()
+        except Exception as e:
+            errs+=1; print("err",part,e,flush=True); time.sleep(5)
+            if errs>8: break
+            continue
+        if "error" in r:
+            errs+=1; print(part,r["error"],flush=True); time.sleep(5); page=max(500,page//2)
+            if errs>8: break
+            continue
+        fs=r.get("features",[])
+        for f in fs:
+            a=f["attributes"]; c=f.get("geometry") if point else f.get("centroid"); c=c or {}; a["_lat"]=c.get("y"); a["_lng"]=c.get("x"); rows.append(a)
+        off+=len(fs)
+        if len(fs)<page: break
+    print(part or "all",len(rows),flush=True)
 print(ST,"parcels",len(rows),flush=True)
 props=collections.defaultdict(list); deals=[]; D=json.load(open("data.json")); ncols=len(D["cols"])
 for a in rows:
