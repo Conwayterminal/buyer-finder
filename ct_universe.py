@@ -44,8 +44,8 @@ def cls(a):
 ent=re.compile(r"\b(LLC|L\.?L\.?C|LP|LTD|CORP|INC|TRUST|TR\b|ASSOC|PARTNERS|HOLDINGS|REALTY|PROPERTIES|GROUP|COMPANY|LLP)\b",re.I)
 from datetime import datetime
 def pdate(s):
-    s=str(s or "").strip()
-    for fmt in ("%d-%b-%y","%m/%d/%Y","%Y-%m-%d","%Y%m%d","%d-%b-%Y","%m/%d/%y"):
+    s=str(s or "").strip().split(" ")[0].split("T")[0]
+    for fmt in ("%m/%d/%Y","%m-%d-%Y","%Y-%m-%d","%d-%b-%y","%d-%b-%Y","%m/%d/%y","%Y%m%d"):
         try: return datetime.strptime(s,fmt).strftime("%Y-%m-%d")
         except Exception: pass
     return None
@@ -66,7 +66,7 @@ for a in rows:
     p={"id":a.get("Parcel_ID"),"town":town,"addr":addr,"zip":str(a.get("ZIP_CODE") or "")[:5],"lat":round(a["lat"],5),"lng":round(a["lng"],5),"type":t,"uc":a.get("State_Use"),"ucd":a.get("State_Use_Description"),"owner":own[:100],"mail":mail[:120],"llc":bool(ent.search(own)),
        "sf":int(sf) if sf else None,"lot":int(float(a["Land_Acres"])*43560) if a.get("Land_Acres") else None,"yb":a.get("AYB"),"zone":a.get("Zone"),"mkt":((a.get("Appraised_Building") or 0)+(a.get("Appraised_Land") or 0)+(a.get("Appraised_Outbuilding") or 0)) or None,"av":a.get("Assessed_Total"),"sold":sale,"price":int(price) if price else None,"prior":pdate(a.get("Prior_Sale_Date")),"priorP":a.get("Prior_Sale_Price"),"card":a.get("Link"),"reg":reg}
     props[town[:1] or "_"].append(p)
-    if sale and sale>="2020-09-01" and price and price>0:
+    if sale and sale>="2020-09-01" and sale<="2026-12-31" and price and price>0:
         conf=("CT business registry principal(s) of the owner LLC" if reg and reg.get("principals") else ("Owner of record (assessor) - LLC, research" if p["llc"] else "Owner of record (assessor)"))
         owner_disp=(", ".join(x.split(" (")[0] for x in reg["principals"][:3])+" ("+own+")")[:150] if reg and reg.get("principals") and p["llc"] else own[:150]
         row=[sale,"Connecticut",town,addr,t,str(a.get("State_Use") or ""),None,p["sf"],int(price),1,p["lat"],p["lng"],own[:150],owner_disp,conf,"",mail[:120],"",own[:80],int(a["AYB"]) if a.get("AYB") and a["AYB"]>1600 else None,str(a.get("Zone") or ""),p["lot"],str(a.get("Link") or ""),None,None,None,"CT",None,None,reg,None,p["mkt"]]
