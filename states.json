@@ -221,5 +221,189 @@
    }
   ],
   "partition": "co_name"
+ },
+ "GA": {
+  "name": "Georgia (Fulton County)",
+  "source": "Fulton County GIS parcels",
+  "area_label": "County",
+  "note": "Fulton County (Atlanta): owner, mailing, land use, class, living units, appraised values. Other counties to follow.",
+  "sources": [
+   {
+    "url": "https://services1.arcgis.com/bqfNVPUK3HOnCFmA/arcgis/rest/services/Parcels/FeatureServer/0",
+    "page": 2000,
+    "where": "ClassCode LIKE 'C%' OR ClassCode LIKE 'I%' OR ClassCode LIKE 'U%' OR (ClassCode LIKE 'R%' AND LivUnits>=4)",
+    "fields": {
+     "id": "ParcelID",
+     "owner": "Owner",
+     "mail": "OwnerAddr1",
+     "mailcity": "OwnerAddr2",
+     "addr": "Address",
+     "town": "TaxDist",
+     "use": "LUCode",
+     "usedesc": "ClassCode",
+     "mkt": "TotAppr",
+     "lot": "LandAcres",
+     "units": "LivUnits",
+     "zone": "JCZoning"
+    },
+    "area_default": "Fulton",
+    "lot_acres": true
+   }
+  ],
+  "classify": [
+   {
+    "regex": "\\bR",
+    "type": "Multifamily 5+ units"
+   },
+   {
+    "prefix": [
+     "3"
+    ],
+    "type": "Multifamily 5+ units"
+   },
+   {
+    "regex": "\\bI",
+    "type": "Industrial"
+   },
+   {
+    "regex": "\\bU",
+    "type": "Utility"
+   },
+   {
+    "regex": ".",
+    "type": "Retail / commercial"
+   }
+  ]
+ },
+ "IN": {
+  "name": "Indiana (Marion County)",
+  "source": "Indianapolis MapIndy parcels",
+  "area_label": "County",
+  "note": "Marion County (Indianapolis): owner, mailing, property class, assessed values.",
+  "sources": [
+   {
+    "url": "https://gis.indy.gov/server/rest/services/MapIndy/MapIndyProperty/MapServer/10",
+    "page": 1000,
+    "where": "PROPERTY_CLASS IN ('COMMERCIAL','INDUSTRIAL')",
+    "fields": {
+     "id": "STATEPARCELNUMBER",
+     "owner": "FULLOWNERNAME",
+     "mail": "OWNERADDRESS",
+     "mailcity": "OWNERCITY",
+     "mailstate": "OWNERSTATE",
+     "addr": [
+      "STNUMBER",
+      "PRE_DIR",
+      "STREET_NAME",
+      "SUFFIX"
+     ],
+     "town": "CITY",
+     "zip": "ZIPCODE",
+     "use": "PROPERTY_SUB_CLASS",
+     "usedesc": "PROPERTY_SUB_CLASS_DESCRIPTION",
+     "mkt": "ASSESSORYEAR_TOTALAV",
+     "lot": "ACREAGE",
+     "sf": "ESTSQFT"
+    },
+    "area_default": "Marion",
+    "lot_acres": true
+   }
+  ],
+  "classify": [
+   {
+    "regex": "APART|APT",
+    "type": "Multifamily 5+ units"
+   },
+   {
+    "regex": "IND|WHSE|WAREHOUSE|MFG",
+    "type": "Industrial"
+   },
+   {
+    "regex": "OFF ",
+    "type": "Office"
+   },
+   {
+    "regex": "HOTEL|MOTEL",
+    "type": "Hotel"
+   },
+   {
+    "regex": "VACANT",
+    "type": "Vacant land / development"
+   },
+   {
+    "regex": "PARKING|GARAGE",
+    "type": "Garage / parking"
+   },
+   {
+    "regex": ".",
+    "type": "Retail / commercial"
+   }
+  ]
+ },
+ "OH": {
+  "name": "Ohio (Cuyahoga County)",
+  "source": "Cuyahoga County fiscal office parcels",
+  "area_label": "County",
+  "note": "Cuyahoga County (Cleveland): owner, mailing, land use, zoning, last transfer date and amount, values.",
+  "sources": [
+   {
+    "url": "https://gis.cuyahogacounty.gov/server/rest/services/CCFO/Parcel_Fabric_Taxparcels/FeatureServer/0",
+    "page": 5000,
+    "where": "property_class IN ('C','I')",
+    "fields": {
+     "id": "parcel_id",
+     "owner": "parcel_owner",
+     "owner2": "second_owner",
+     "mail": "mail_addr_street",
+     "mailcity": "mail_city",
+     "mailstate": "mail_state",
+     "addr": "par_addr_all",
+     "town": "parcel_city",
+     "zip": "parcel_zip",
+     "use": "tax_luc",
+     "usedesc": "tax_luc_description",
+     "mkt": "certified_tax_total",
+     "lot": "parcel_acreage",
+     "zone": "zoning_code",
+     "sold": "last_transfer_date",
+     "price": "last_sales_amount",
+     "book": "book_page"
+    },
+    "area_default": "Cuyahoga",
+    "lot_acres": true
+   }
+  ],
+  "classify": [
+   {
+    "regex": "APART|UNIT",
+    "type": "Multifamily 5+ units"
+   },
+   {
+    "prefix": [
+     "3"
+    ],
+    "type": "Industrial"
+   },
+   {
+    "regex": "OFFICE",
+    "type": "Office"
+   },
+   {
+    "regex": "HOTEL|MOTEL",
+    "type": "Hotel"
+   },
+   {
+    "regex": "VAC",
+    "type": "Vacant land / development"
+   },
+   {
+    "regex": "PARKING|GARAGE",
+    "type": "Garage / parking"
+   },
+   {
+    "regex": ".",
+    "type": "Retail / commercial"
+   }
+  ]
  }
 }

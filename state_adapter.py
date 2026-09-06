@@ -5,7 +5,8 @@ site/props/<ST>_<Area>.json + site/props/<ST>_areas.json + site/data/<ST>.json (
 and registers the state in site/props/states.json for the Property lookup picker."""
 import sys, os, re, json, time, collections, requests
 HERE=os.path.dirname(os.path.abspath(__file__)); os.chdir(HERE)
-ST=sys.argv[1]; cfg=json.load(open("states.json"))[ST]
+ST=sys.argv[1]; TOP=json.load(open("states.json"))[ST]
+SOURCES=TOP.get("sources") or [TOP]
 ent=re.compile(r"\b(LLC|L\.?L\.?C|LP|LTD|CORP|INC|TRUST|TR\b|ASSOC|PARTNERS|HOLDINGS|REALTY|PROPERTIES|GROUP|CO\b|COMPANY|LLLP|LLP|LTD)\b",re.I)
 def g(a,k):
     f=cfg["fields"].get(k)
@@ -35,46 +36,53 @@ def num(v):
     try:
         x=float(v); return None if x!=x else x
     except Exception: return None
-U=cfg["url"]+"/query"; F=",".join(sorted({x for v in cfg["fields"].values() if v for x in (v if isinstance(v,list) else [v]) if x}))
-rows=[]; page0=cfg.get("page",2000); point=cfg.get("point_layer",False)
-parts=[None]
-if cfg.get("partition"):
-    pf=cfg["partition"]
-    try:
-        pj=requests.post(U,data={"where":"1=1","outFields":pf,"returnDistinctValues":"true","returnGeometry":"false","f":"json"},timeout=300).json()
-        parts=sorted({f["attributes"][pf] for f in pj.get("features",[]) if f["attributes"].get(pf)}) or [None]
-    except Exception as e: print("partition list failed",e,flush=True)
-    print("partitions",len(parts),flush=True)
-for part in parts:
-    where=cfg["where"] if part is None else f"{cfg['partition']}='{str(part).replace(chr(39),chr(39)*2)}' AND ({cfg['where']})"
-    off=0; page=page0; errs=0
-    while True:
-        try:
-            r=requests.post(U,data={"where":where,"outFields":F,"f":"json","returnGeometry":"true" if point else "false","returnCentroid":"false" if point else "true","outSR":"4326","resultOffset":off,"resultRecordCount":page,"orderByFields":cfg.get("order","OBJECTID")},timeout=300).json()
-        except Exception as e:
-            errs+=1; print("err",part,e,flush=True); time.sleep(5)
-            if errs>8: break
-            continue
-        if "error" in r:
-            errs+=1; print(part,r["error"],flush=True); time.sleep(5); page=max(500,page//2)
-            if errs>8: break
-            continue
-        fs=r.get("features",[])
-        if fs and not point and "centroid" not in fs[0] and "geometry" not in fs[0]:
-            # server does not support centroids: refetch this page with geometry and average the outer ring
-            r2=requests.post(U,data={"where":where,"outFields":F,"f":"json","returnGeometry":"true","outSR":"4326","resultOffset":off,"resultRecordCount":page,"orderByFields":cfg.get("order","OBJECTID"),"geometryPrecision":5},timeout=300).json()
-            fs=r2.get("features",fs)
-        for f in fs:
-            a=f["attributes"]; c=f.get("geometry") if point else f.get("centroid")
-            if not c and f.get("geometry") and f["geometry"].get("rings"):
-                ring=f["geometry"]["rings"][0]; c={"x":sum(p[0] for p in ring)/len(ring),"y":sum(p[1] for p in ring)/len(ring)}
-            c=c or {}; a["_lat"]=c.get("y"); a["_lng"]=c.get("x"); rows.append(a)
-        off+=len(fs)
-        if len(fs)<page: break
-    print(part or "all",len(rows),flush=True)
+allrows=[]
+for src in SOURCES:
+  cfg=dict(TOP); cfg.update(src); cfg.pop("sources",None)
+  U=cfg["url"]+"/query"; F=",".join(sorted({x for v in cfg["fields"].values() if v for x in (v if isinstance(v,list) else [v]) if x}))
+  rows=[]; page0=cfg.get("page",2000); point=cfg.get("point_layer",False)
+  parts=[None]
+  if cfg.get("partition"):
+      pf=cfg["partition"]
+      try:
+          pj=requests.post(U,data={"where":"1=1","outFields":pf,"returnDistinctValues":"true","returnGeometry":"false","f":"json"},timeout=300).json()
+          parts=sorted({f["attributes"][pf] for f in pj.get("features",[]) if f["attributes"].get(pf)}) or [None]
+      except Exception as e: print("partition list failed",e,flush=True)
+      print("partitions",len(parts),flush=True)
+  for part in parts:
+      where=cfg["where"] if part is None else f"{cfg['partition']}='{str(part).replace(chr(39),chr(39)*2)}' AND ({cfg['where']})"
+      off=0; page=page0; errs=0
+      while True:
+          try:
+              r=requests.post(U,data={"where":where,"outFields":F,"f":"json","returnGeometry":"true" if point else "false","returnCentroid":"false" if point else "true","outSR":"4326","resultOffset":off,"resultRecordCount":page,"orderByFields":cfg.get("order","OBJECTID")},timeout=300).json()
+          except Exception as e:
+              errs+=1; print("err",part,e,flush=True); time.sleep(5)
+              if errs>8: break
+              continue
+          if "error" in r:
+              errs+=1; print(part,r["error"],flush=True); time.sleep(5); page=max(500,page//2)
+              if errs>8: break
+              continue
+          fs=r.get("features",[])
+          if fs and not point and "centroid" not in fs[0] and "geometry" not in fs[0]:
+              # server does not support centroids: refetch this page with geometry and average the outer ring
+              r2=requests.post(U,data={"where":where,"outFields":F,"f":"json","returnGeometry":"true","outSR":"4326","resultOffset":off,"resultRecordCount":page,"orderByFields":cfg.get("order","OBJECTID"),"geometryPrecision":5},timeout=300).json()
+              fs=r2.get("features",fs)
+          for f in fs:
+              a=f["attributes"]; c=f.get("geometry") if point else f.get("centroid")
+              if not c and f.get("geometry") and f["geometry"].get("rings"):
+                  ring=f["geometry"]["rings"][0]; c={"x":sum(p[0] for p in ring)/len(ring),"y":sum(p[1] for p in ring)/len(ring)}
+              c=c or {}; a["_lat"]=c.get("y"); a["_lng"]=c.get("x"); rows.append(a)
+          off+=len(fs)
+          if len(fs)<page: break
+      print(part or "all",len(rows),flush=True)
+  for a in rows: a["_cfg"]=cfg
+  allrows+=rows
+rows=allrows
 print(ST,"parcels",len(rows),flush=True)
 props=collections.defaultdict(list); deals=[]; D=json.load(open("data.json")); ncols=len(D["cols"])
 for a in rows:
+    cfg=a["_cfg"]
     if a["_lat"] is None: continue
     t=classify(a)
     if not t: continue
