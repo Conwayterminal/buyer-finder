@@ -382,10 +382,11 @@
 "name": "Ohio (Cuyahoga, Franklin)",
 "areaLabel": "County",
 "areas": [
-"Cuyahoga"
+"Cuyahoga",
+"Franklin"
 ],
-"props": 34345,
-"deals": 7032,
+"props": 67175,
+"deals": 12874,
 "note": "Cuyahoga (Cleveland) and Franklin (Columbus) counties: owner, mailing, use, sale date and price, values."
 },
 "MI": {
