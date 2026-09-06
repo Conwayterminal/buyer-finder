@@ -121,8 +121,7 @@
     "regex": ".",
     "type": "Retail / commercial"
    }
-  ],
-  "partition": "WARD"
+  ]
  },
  "VT": {
   "name": "Vermont",

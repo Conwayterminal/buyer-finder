@@ -42,7 +42,7 @@ if cfg.get("partition"):
     pf=cfg["partition"]
     try:
         pj=requests.post(U,data={"where":"1=1","outFields":pf,"returnDistinctValues":"true","returnGeometry":"false","f":"json"},timeout=300).json()
-        parts=sorted({f["attributes"][pf] for f in pj.get("features",[]) if f["attributes"].get(pf)})
+        parts=sorted({f["attributes"][pf] for f in pj.get("features",[]) if f["attributes"].get(pf)}) or [None]
     except Exception as e: print("partition list failed",e,flush=True)
     print("partitions",len(parts),flush=True)
 for part in parts:
