@@ -35,7 +35,7 @@ def num(v):
     try:
         x=float(v); return None if x!=x else x
     except Exception: return None
-U=cfg["url"]+"/query"; F=",".join(sorted({x for v in cfg["fields"].values() for x in (v if isinstance(v,list) else [v])}))
+U=cfg["url"]+"/query"; F=",".join(sorted({x for v in cfg["fields"].values() if v for x in (v if isinstance(v,list) else [v]) if x}))
 rows=[]; page0=cfg.get("page",2000); point=cfg.get("point_layer",False)
 parts=[None]
 if cfg.get("partition"):
@@ -60,8 +60,15 @@ for part in parts:
             if errs>8: break
             continue
         fs=r.get("features",[])
+        if fs and not point and "centroid" not in fs[0] and "geometry" not in fs[0]:
+            # server does not support centroids: refetch this page with geometry and average the outer ring
+            r2=requests.post(U,data={"where":where,"outFields":F,"f":"json","returnGeometry":"true","outSR":"4326","resultOffset":off,"resultRecordCount":page,"orderByFields":cfg.get("order","OBJECTID"),"geometryPrecision":5},timeout=300).json()
+            fs=r2.get("features",fs)
         for f in fs:
-            a=f["attributes"]; c=f.get("geometry") if point else f.get("centroid"); c=c or {}; a["_lat"]=c.get("y"); a["_lng"]=c.get("x"); rows.append(a)
+            a=f["attributes"]; c=f.get("geometry") if point else f.get("centroid")
+            if not c and f.get("geometry") and f["geometry"].get("rings"):
+                ring=f["geometry"]["rings"][0]; c={"x":sum(p[0] for p in ring)/len(ring),"y":sum(p[1] for p in ring)/len(ring)}
+            c=c or {}; a["_lat"]=c.get("y"); a["_lng"]=c.get("x"); rows.append(a)
         off+=len(fs)
         if len(fs)<page: break
     print(part or "all",len(rows),flush=True)
