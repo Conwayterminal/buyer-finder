@@ -223,10 +223,10 @@
   "partition": "co_name"
  },
  "GA": {
-  "name": "Georgia (Fulton County)",
+  "name": "Georgia (Johns Creek)",
   "source": "Fulton County GIS parcels",
   "area_label": "County",
-  "note": "Fulton County (Atlanta): owner, mailing, land use, class, living units, appraised values. Other counties to follow.",
+  "note": "Johns Creek (north Fulton) only so far \u2014 the city publishes owner-level parcels; Fulton County's own service is not public. Atlanta/Fulton to be added from the county's data download.",
   "sources": [
    {
     "url": "https://services1.arcgis.com/bqfNVPUK3HOnCFmA/arcgis/rest/services/Parcels/FeatureServer/0",
@@ -246,7 +246,7 @@
      "units": "LivUnits",
      "zone": "JCZoning"
     },
-    "area_default": "Fulton",
+    "area_default": "Johns Creek",
     "lot_acres": true
    }
   ],
