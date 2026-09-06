@@ -357,5 +357,35 @@
 "props": 209050,
 "deals": 0,
 "note": "NC OneMap has owner, mailing, use, value and sale date; sale prices are not in the statewide layer."
+},
+"GA": {
+"name": "Georgia (Fulton County)",
+"areaLabel": "County",
+"areas": [
+"Fulton"
+],
+"props": 547,
+"deals": 0,
+"note": "Fulton County (Atlanta): owner, mailing, land use, class, living units, appraised values. Other counties to follow."
+},
+"IN": {
+"name": "Indiana (Marion County)",
+"areaLabel": "County",
+"areas": [
+"Marion"
+],
+"props": 20863,
+"deals": 0,
+"note": "Marion County (Indianapolis): owner, mailing, property class, assessed values."
+},
+"OH": {
+"name": "Ohio (Cuyahoga County)",
+"areaLabel": "County",
+"areas": [
+"Cuyahoga"
+],
+"props": 34345,
+"deals": 7032,
+"note": "Cuyahoga County (Cleveland): owner, mailing, land use, zoning, last transfer date and amount, values."
 }
 }
