@@ -2,10 +2,12 @@
 "DC": {
 "name": "District of Columbia",
 "areaLabel": "District",
-"areas": [],
-"props": 0,
-"deals": 0,
-"note": "DC lots with owner, care-of, use, assessed value, last recordation date (no price in this layer)."
+"areas": [
+"District Of Columbia"
+],
+"props": 21286,
+"deals": 3456,
+"note": "DC lots with owner, care-of, use, assessed value, last sale date and price."
 },
 "VT": {
 "name": "Vermont",
