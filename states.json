@@ -341,10 +341,10 @@
   ]
  },
  "OH": {
-  "name": "Ohio (Cuyahoga County)",
+  "name": "Ohio (Cuyahoga, Franklin)",
   "source": "Cuyahoga County fiscal office parcels",
   "area_label": "County",
-  "note": "Cuyahoga County (Cleveland): owner, mailing, land use, zoning, last transfer date and amount, values.",
+  "note": "Cuyahoga (Cleveland) and Franklin (Columbus) counties: owner, mailing, use, sale date and price, values.",
   "sources": [
    {
     "url": "https://gis.cuyahogacounty.gov/server/rest/services/CCFO/Parcel_Fabric_Taxparcels/FeatureServer/0",
@@ -371,6 +371,30 @@
     },
     "area_default": "Cuyahoga",
     "lot_acres": true
+   },
+   {
+    "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/MapServer/0",
+    "page": 3000,
+    "where": "CLASSCD LIKE 'C%' OR CLASSCD LIKE 'I%' OR CLASSCD LIKE 'M%' OR CLASSCD LIKE 'U%' OR (PCLASS>=300 AND PCLASS<500)",
+    "fields": {
+     "id": "PARCELID",
+     "owner": "OWNERNME1",
+     "owner2": "OWNERNME2",
+     "mail": "PSTLADDRES",
+     "mailcity": "PSTLCITYSTZIP",
+     "addr": "SITEADDRESS",
+     "zip": "ZIPCD",
+     "use": "PCLASS",
+     "usedesc": "PCLASSDSCRP",
+     "mkt": "TOTVALUEBASE",
+     "lot": "ACRES",
+     "sf": "BLDGAREA",
+     "yb": "RESYRBLT",
+     "sold": "SALEDATE",
+     "price": "SALEPRICE"
+    },
+    "area_default": "Franklin",
+    "lot_acres": true
    }
   ],
   "classify": [
@@ -394,6 +418,72 @@
    },
    {
     "regex": "VAC",
+    "type": "Vacant land / development"
+   },
+   {
+    "regex": "PARKING|GARAGE",
+    "type": "Garage / parking"
+   },
+   {
+    "regex": ".",
+    "type": "Retail / commercial"
+   }
+  ]
+ },
+ "MI": {
+  "name": "Michigan (Detroit)",
+  "source": "City of Detroit assessor parcels",
+  "area_label": "City",
+  "note": "Detroit: taxpayer of record, mailing, class, use, zoning, SF, year built, sale date and price, assessed values.",
+  "sources": [
+   {
+    "url": "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/parcel_file_current/FeatureServer/0",
+    "page": 1000,
+    "where": "property_class IN ('201','202','301','302') OR use_code_description LIKE '%APART%' OR use_code_description LIKE '%MULTI%'",
+    "fields": {
+     "id": "parcel_id",
+     "owner": "taxpayer_1",
+     "owner2": "taxpayer_2",
+     "mail": "taxpayer_address",
+     "mailcity": "taxpayer_city",
+     "mailstate": "taxpayer_state",
+     "addr": "address",
+     "zip": "zip_code",
+     "use": "property_class",
+     "usedesc": "use_code_description",
+     "mkt": "amt_assessed_value",
+     "lot": "total_acreage",
+     "sf": "total_floor_area",
+     "yb": "year_built",
+     "zone": "zoning_district",
+     "sold": "sale_date",
+     "price": "amt_sale_price"
+    },
+    "area_default": "Detroit",
+    "lot_acres": true
+   }
+  ],
+  "classify": [
+   {
+    "regex": "APART|MULTI",
+    "type": "Multifamily 5+ units"
+   },
+   {
+    "prefix": [
+     "30"
+    ],
+    "type": "Industrial"
+   },
+   {
+    "regex": "OFFICE",
+    "type": "Office"
+   },
+   {
+    "regex": "HOTEL|MOTEL",
+    "type": "Hotel"
+   },
+   {
+    "regex": "VACANT",
     "type": "Vacant land / development"
    },
    {
