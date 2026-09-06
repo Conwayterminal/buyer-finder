@@ -66,7 +66,7 @@
   "source": "DC OCTO Common Ownership Lots",
   "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/FeatureServer/40",
   "page": 2000,
-  "where": "CLASSTYPE IN ('2','3','4') OR PROPTYPE LIKE 'Residential-Apartment%' OR PROPTYPE LIKE 'Residential-Multi%' OR PROPTYPE LIKE 'Store%' OR PROPTYPE LIKE 'Office%' OR PROPTYPE LIKE 'Commercial%' OR PROPTYPE LIKE 'Industrial%' OR PROPTYPE LIKE 'Hotel%' OR PROPTYPE LIKE 'Vacant-Commercial%' OR PROPTYPE LIKE 'Warehouse%' OR PROPTYPE LIKE 'Parking%' OR PROPTYPE LIKE 'Restaurant%' OR PROPTYPE LIKE 'Shopping%' OR PROPTYPE LIKE 'Garage%' OR PROPTYPE LIKE 'Mixed%'",
+  "where": "CLASSTYPE IN ('2','3','4') OR PROPTYPE LIKE 'Residential-Apartment%' OR PROPTYPE LIKE 'Residential-Multi%'",
   "fields": {
    "id": "SSL",
    "owner": "OWNERNAME",
@@ -121,7 +121,8 @@
     "regex": ".",
     "type": "Retail / commercial"
    }
-  ]
+  ],
+  "partition": "WARD"
  },
  "VT": {
   "name": "Vermont",
