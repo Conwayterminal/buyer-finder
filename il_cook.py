@@ -20,6 +20,10 @@ def soda(ds,params):
     return rows
 yr=soda("tx2p-k2g9",{"$select":"max(year)"})[0]["max_year"]
 P=soda("tx2p-k2g9",{"$select":"pin,class,lat,lon,prop_address_full,prop_address_city_name,mail_address_name,mail_address_full,mail_address_city_name,mail_address_state,township_name,cook_municipality_name,nbhd_code","$where":f"year='{yr}' AND {W}","$order":"pin"})
+G={r["pin"]:(r["lat"],r["lon"]) for r in soda("pabr-t5kh",{"$select":"pin,lat,lon","$where":f"lat IS NOT NULL AND {W}","$order":"pin"}) if r.get("lat")}
+print("coordinates",len(G),flush=True)
+for r in P:
+    if not r.get("lat") and r["pin"] in G: r["lat"],r["lon"]=G[r["pin"]]
 S=soda("wvhk-k5uv",{"$select":"pin,class,sale_date,sale_price,buyer_name,seller_name,deed_type,is_multisale,num_parcels_sale","$where":f"sale_date>='2020-09-01' AND {W}","$order":"sale_date"})
 CL={"1":"Vacant land / development","3":"Multifamily 7+ units","5":"Retail / commercial","6":"Industrial","7":"Retail / commercial","8":"Industrial","9":"Multifamily 7+ units"}
 def cl(c):
