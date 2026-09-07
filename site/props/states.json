@@ -398,5 +398,15 @@
 "props": 37365,
 "deals": 6920,
 "note": "Detroit: taxpayer of record, mailing, class, use, zoning, SF, year built, sale date and price, assessed values."
+},
+"IL": {
+"name": "Illinois (Cook County)",
+"areaLabel": "County",
+"areas": [
+"Cook"
+],
+"props": 0,
+"deals": 0,
+"note": "Cook County (Chicago): taxpayer of record, mailing, class, and every deed since 2020 with buyer and seller names and price."
 }
 }
