@@ -408,5 +408,15 @@
 "props": 169754,
 "deals": 36008,
 "note": "Cook County (Chicago): taxpayer of record, mailing, class, and every deed since 2020 with buyer and seller names and price."
+},
+"WA": {
+"name": "Washington (King County)",
+"areaLabel": "County",
+"areas": [
+"King"
+],
+"props": 17,
+"deals": 1,
+"note": "King County (Seattle): use, zoning, lot, building SF/units/year, values, taxpayer mailing (names withheld in the bulk file), and every sale since 2020 with buyer and seller names and price."
 }
 }
