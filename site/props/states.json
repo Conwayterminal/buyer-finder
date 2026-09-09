@@ -5,8 +5,8 @@
 "areas": [
 "District Of Columbia"
 ],
-"props": 21286,
-"deals": 3456,
+"props": 21274,
+"deals": 3454,
 "note": "DC lots with owner, care-of, use, assessed value, last sale date and price."
 },
 "VT": {
@@ -271,7 +271,7 @@
 "Woodstock",
 "Worcester"
 ],
-"props": 26515,
+"props": 26521,
 "deals": 0,
 "note": "Vermont grand list: owner, mailing, category, listed value; no sale dates in the statewide layer."
 },
@@ -359,14 +359,14 @@
 "note": "NC OneMap has owner, mailing, use, value and sale date; sale prices are not in the statewide layer."
 },
 "GA": {
-"name": "Georgia (Johns Creek)",
+"name": "Georgia (Fulton County)",
 "areaLabel": "County",
 "areas": [
-"Johns Creek"
+"Fulton"
 ],
-"props": 547,
+"props": 22977,
 "deals": 0,
-"note": "Johns Creek (north Fulton) only so far \u2014 the city publishes owner-level parcels; Fulton County's own service is not public. Atlanta/Fulton to be added from the county's data download."
+"note": "Fulton County (Atlanta) plus Johns Creek: owner, mailing, land use, class, living units, appraised values."
 },
 "IN": {
 "name": "Indiana (Marion County)",
@@ -386,7 +386,7 @@
 "Franklin"
 ],
 "props": 67175,
-"deals": 12874,
+"deals": 12880,
 "note": "Cuyahoga (Cleveland) and Franklin (Columbus) counties: owner, mailing, use, sale date and price, values."
 },
 "MI": {
@@ -395,8 +395,8 @@
 "areas": [
 "Detroit"
 ],
-"props": 37365,
-"deals": 6920,
+"props": 37366,
+"deals": 6927,
 "note": "Detroit: taxpayer of record, mailing, class, use, zoning, SF, year built, sale date and price, assessed values."
 },
 "IL": {
@@ -418,5 +418,15 @@
 "props": 32662,
 "deals": 6465,
 "note": "King County (Seattle): use, zoning, lot, building SF/units/year, values, taxpayer mailing (names withheld in the bulk file), and every sale since 2020 with buyer and seller names and price."
+},
+"AZ": {
+"name": "Arizona (Pima County)",
+"areaLabel": "County",
+"areas": [
+"Pima"
+],
+"props": 19855,
+"deals": 0,
+"note": "Pima County (Tucson): owner, mailing, use, full cash value, last recording date. Maricopa (Phoenix) to follow from the assessor download."
 }
 }
