@@ -223,15 +223,15 @@
   "partition": "co_name"
  },
  "GA": {
-  "name": "Georgia (Johns Creek)",
-  "source": "Fulton County GIS parcels",
+  "name": "Georgia (Fulton County)",
+  "source": "Fulton County GIS tax parcels",
   "area_label": "County",
-  "note": "Johns Creek (north Fulton) only so far \u2014 the city publishes owner-level parcels; Fulton County's own service is not public. Atlanta/Fulton to be added from the county's data download.",
+  "note": "Fulton County (Atlanta) plus Johns Creek: owner, mailing, land use, class, living units, appraised values.",
   "sources": [
    {
-    "url": "https://services1.arcgis.com/bqfNVPUK3HOnCFmA/arcgis/rest/services/Parcels/FeatureServer/0",
+    "url": "https://services1.arcgis.com/AQDHTHDrZzfsFsB5/arcgis/rest/services/Tax_Parcels_2025/FeatureServer/0",
     "page": 2000,
-    "where": "ClassCode LIKE 'C%' OR ClassCode LIKE 'I%' OR ClassCode LIKE 'U%' OR (ClassCode LIKE 'R%' AND LivUnits>=4)",
+    "where": "ClassCode LIKE 'C%' OR ClassCode LIKE 'I%' OR ClassCode LIKE 'U%' OR LivUnits>=5",
     "fields": {
      "id": "ParcelID",
      "owner": "Owner",
@@ -243,22 +243,15 @@
      "usedesc": "ClassCode",
      "mkt": "TotAppr",
      "lot": "LandAcres",
-     "units": "LivUnits",
-     "zone": "JCZoning"
+     "units": "LivUnits"
     },
-    "area_default": "Johns Creek",
+    "area_default": "Fulton",
     "lot_acres": true
    }
   ],
   "classify": [
    {
-    "regex": "\\bR",
-    "type": "Multifamily 5+ units"
-   },
-   {
-    "prefix": [
-     "3"
-    ],
+    "regex": "^R|\\bR\\d",
     "type": "Multifamily 5+ units"
    },
    {
@@ -527,6 +520,69 @@
    },
    {
     "regex": "PARKING|GARAGE",
+    "type": "Garage / parking"
+   },
+   {
+    "regex": ".",
+    "type": "Retail / commercial"
+   }
+  ]
+ },
+ "AZ": {
+  "name": "Arizona (Pima County)",
+  "source": "Pima County regional parcels",
+  "area_label": "County",
+  "note": "Pima County (Tucson): owner, mailing, use, full cash value, last recording date. Maricopa (Phoenix) to follow from the assessor download.",
+  "sources": [
+   {
+    "url": "https://utility.arcgis.com/usrsvcs/servers/321414f3568b42f3bb29bf9859f03b66/rest/services/PublicMaps/PropertyHousing/MapServer/17",
+    "page": 2000,
+    "point_layer": false,
+    "order": "OBJECTID",
+    "where": "USE_DESC LIKE '%COMM%' OR USE_DESC LIKE '%APART%' OR USE_DESC LIKE '%INDUST%' OR USE_DESC LIKE '%OFFICE%' OR USE_DESC LIKE '%RETAIL%' OR USE_DESC LIKE '%WAREHOUSE%' OR USE_DESC LIKE '%HOTEL%' OR USE_DESC LIKE '%MOTEL%' OR USE_DESC LIKE '%MULTI%' OR USE_DESC LIKE '%STORE%' OR USE_DESC LIKE '%SHOP%' OR USE_DESC LIKE '%RESTAUR%' OR USE_DESC LIKE '%VACANT COMM%' OR USE_DESC LIKE '%VACANT INDUST%' OR USE_DESC LIKE '%MFG%' OR USE_DESC LIKE '%PARKING%'",
+    "fields": {
+     "id": "PARCEL",
+     "owner": "MAIL1",
+     "mail": "ADDRESS",
+     "mailcity": "CITY",
+     "mailstate": "STATE_PROVINCE",
+     "addr": "SITE_ADDRESS",
+     "town": "SITE_ZIPCITY",
+     "zip": "SITE_ZIP",
+     "use": "PARCEL_USE",
+     "usedesc": "USE_DESC",
+     "mkt": "FCV",
+     "lot": "GISACRES",
+     "sold": "RECORDDATE",
+     "zone": "CURZONE_OL"
+    },
+    "area_default": "Pima",
+    "lot_acres": true
+   }
+  ],
+  "classify": [
+   {
+    "regex": "APART|MULTI",
+    "type": "Multifamily 5+ units"
+   },
+   {
+    "regex": "INDUST|WAREHOUSE|MFG",
+    "type": "Industrial"
+   },
+   {
+    "regex": "OFFICE",
+    "type": "Office"
+   },
+   {
+    "regex": "HOTEL|MOTEL",
+    "type": "Hotel"
+   },
+   {
+    "regex": "VACANT",
+    "type": "Vacant land / development"
+   },
+   {
+    "regex": "PARKING",
     "type": "Garage / parking"
    },
    {
