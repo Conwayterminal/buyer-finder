@@ -1,5 +1,5 @@
 {
-"generated": "2026-09-10 02:08 UTC",
+"generated": "2026-09-10 02:17 UTC",
 "markets": {
 "AZ": {
 "props": 19855,
@@ -75,7 +75,7 @@
 },
 "NJ": {
 "props": 355763,
-"deals": 133874,
+"deals": 133873,
 "refreshed": "2026-09-10",
 "stale": false
 },
