@@ -27,6 +27,7 @@ jobs:
           python3 nyc_sales_from_props.py || true
       - name: Save data
         run: |
+          python3 status.py || true
           git config user.name "buyer-finder-bot"
           git config user.email "bot@conwaypropertyadvisors.com"
           git add data.json site/index.html site/data dob_state.json nyc_bbls.json

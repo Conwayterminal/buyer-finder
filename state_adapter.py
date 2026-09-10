@@ -99,6 +99,10 @@ for a in rows:
         conf=("Owner of record ("+cfg["source"]+")")+(" - LLC, research" if p["llc"] else "")
         deals.append([sold,area+(" County" if cfg.get("area_is_county") else ""),town,p["addr"],t,p["uc"],p["units"],p["sf"],int(price),1,p["lat"],p["lng"],own[:150],own[:150],conf,"",mail[:120],"",own[:80],p["yb"],p["zone"],p["lot"],p["id"],None,None,None,ST,None,None,None,None,p["mkt"]][:ncols])
 os.makedirs("site/props",exist_ok=True)
+prev=json.load(open("site/props/states.json")).get(ST,{}) if os.path.exists("site/props/states.json") else {}
+newn=sum(len(v) for v in props.values())
+if prev.get("props",0)>0 and newn<0.9*prev["props"]:
+    print(f"HEALTH: {ST} returned {newn} vs {prev['props']} last time - keeping previous files",flush=True); raise SystemExit(0)
 for k,L in props.items(): json.dump(L,open(f"site/props/{ST}_{re.sub(r'[^A-Za-z0-9]+','_',k)}.json","w"),separators=(",",":"),allow_nan=False)
 json.dump(sorted(props.keys()),open(f"site/props/{ST}_areas.json","w"))
 json.dump({"cols":D["cols"],"rows":deals,"pulled":time.strftime("%Y-%m-%d")},open(f"site/data/{ST}.json","w"),separators=(",",":"))
