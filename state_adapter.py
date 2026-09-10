@@ -20,6 +20,9 @@ def classify(a):
         if rule.get("regex") and re.search(rule["regex"],d+" "+uc): return rule["type"]
     return cfg.get("default_type")
 def pdate(v):
+    r=_pdate(v)
+    return r if r and r<=time.strftime("%Y-%m-%d") and r>="1900-01-01" else None
+def _pdate(v):
     if v is None or v=="": return None
     if isinstance(v,(int,float)):
         if v>10**11: v=v/1000

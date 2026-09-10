@@ -31,8 +31,9 @@ def asset(uc,desc):
     return "Retail / commercial"
 ent=re.compile(r"\b(LLC|L\.?L\.?C|LP|LTD|CORP|INC|TRUST|TR\b|ASSOC|PARTNERS|HOLDINGS|REALTY|PROPERTIES|GROUP|COMPANY|LLP|NOMINEE)\b",re.I)
 def dt(s):
-    s=str(s or "");
-    return f"{s[:4]}-{s[4:6]}-{s[6:8]}" if len(s)==8 and s.isdigit() else None
+    s=str(s or "")
+    r=f"{s[:4]}-{s[4:6]}-{s[6:8]}" if len(s)==8 and s.isdigit() else None
+    return r if r and "1900-01-01"<=r<=time.strftime("%Y-%m-%d") else None
 props=collections.defaultdict(list); deals=[]
 for a in rows:
     if a.get("lat") is None: continue

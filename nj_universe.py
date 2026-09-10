@@ -40,6 +40,9 @@ def asset(a):
     if re.search(r"WHSE|WAREHOUSE|INDUST|MFG",txt): return "Industrial"
     return "Retail / commercial"
 def d6(x):
+    r=_d6(x)
+    return r if r and "1900-01-01"<=r<=time.strftime("%Y-%m-%d") else None
+def _d6(x):
     x=str(x or "").strip()
     if len(x)==8 and x.isdigit(): return f"{x[:4]}-{x[4:6]}-{x[6:8]}"
     if len(x)==6 and x.isdigit():

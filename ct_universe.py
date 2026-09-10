@@ -44,6 +44,9 @@ def cls(a):
 ent=re.compile(r"\b(LLC|L\.?L\.?C|LP|LTD|CORP|INC|TRUST|TR\b|ASSOC|PARTNERS|HOLDINGS|REALTY|PROPERTIES|GROUP|COMPANY|LLP)\b",re.I)
 from datetime import datetime
 def pdate(s):
+    r=_pdate(s)
+    return r if r and "1900-01-01"<=r<=datetime.date.today().isoformat() else None
+def _pdate(s):
     s=str(s or "").strip().split(" ")[0].split("T")[0]
     for fmt in ("%m/%d/%Y","%m-%d-%Y","%Y-%m-%d","%d-%b-%y","%d-%b-%Y","%m/%d/%y","%Y%m%d"):
         try: return datetime.strptime(s,fmt).strftime("%Y-%m-%d")

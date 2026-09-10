@@ -52,7 +52,9 @@ for r in d.itertuples():
         try: v=float(x); return None if v!=v else v
         except Exception: return None
     dt=None
-    if isinstance(r.new_own_dt,str) and re.match(r"\d{2}/\d{2}/\d{4}",r.new_own_dt.strip()): m,dd,y=r.new_own_dt.strip().split("/"); dt=f"{y}-{m}-{dd}"
+    if isinstance(r.new_own_dt,str) and re.match(r"\d{2}/\d{2}/\d{4}",r.new_own_dt.strip()):
+        m,dd,y=r.new_own_dt.strip().split("/"); dt=f"{y}-{m}-{dd}"
+        if dt>time.strftime("%Y-%m-%d") or dt<"1900-01-01": dt=None
     own=re.sub(r"\s+"," ",str(r.mailto or "")).strip().title()
     P.append({"id":"HCAD "+r.acct.strip(),"county":"Harris","town":str(r.Market_Area_1_Dscr or "").strip().title() or "Houston","addr":str(r.site_addr_1 or "").strip().title(),"zip":str(r.site_addr_3 or "")[:5],"lat":ll[0],"lng":ll[1],"approx":ap,"type":SC.get(r.sc,"Retail / commercial"),"cls":r.sc,"owner":own[:100],"llc":bool(ent.search(own)),
        "mail":", ".join(v for v in [str(r.mail_addr_1 or "").strip().title(),str(r.mail_city or "").strip().title(),str(r.mail_state or "").strip()] if v and v!="Nan")[:120],"units":None,"sf":int(num(r.bld_ar)) if num(r.bld_ar) else None,"lot":int(num(r.land_ar)) if num(r.land_ar) else None,"yb":int(num(r.yr_impr)) if num(r.yr_impr) and num(r.yr_impr)>1700 else None,"mkt":int(num(r.tot_mkt_val)) if num(r.tot_mkt_val) else None,"sold":dt,"price":None})
@@ -90,6 +92,7 @@ for r in d.itertuples():
     if not ll: continue
     own=(str(r.OWNER_NAME1 or "").strip()+((" & "+str(r.OWNER_NAME2).strip()) if isinstance(r.OWNER_NAME2,str) and r.OWNER_NAME2.strip() else "")).title()
     dt=str(r.DEED_TXFR_DATE or "")[:10] if isinstance(r.DEED_TXFR_DATE,str) and re.match(r"\d{4}-\d{2}-\d{2}",str(r.DEED_TXFR_DATE)) else None
+    if dt and (dt>time.strftime("%Y-%m-%d") or dt<"1900-01-01"): dt=None
     tv=pd.to_numeric(r.TOT_VAL,errors="coerce")
     P.append({"id":"DCAD "+r.ACCOUNT_NUM.strip(),"county":"Dallas","town":str(r.PROPERTY_CITY or "").strip().title() or "Dallas","addr":r.site.title(),"zip":str(r.PROPERTY_ZIPCODE or "")[:5],"lat":ll[0],"lng":ll[1],"approx":ap,"type":dcls(r.cls),"cls":str(r.cls or "")[:40],"owner":own[:100],"llc":bool(ent.search(own)),
        "mail":", ".join(v2 for v2 in [str(r.OWNER_ADDRESS_LINE1 or "").strip().title(),str(r.OWNER_CITY or "").strip().title(),str(r.OWNER_STATE or "").strip()] if v2 and v2!="Nan")[:120],"units":int(r.units) if pd.notna(r.units) and r.units>0 else None,"sf":int(r.sf) if pd.notna(r.sf) and r.sf>0 else None,"lot":None,"yb":int(float(r.yb)) if isinstance(r.yb,str) and r.yb.replace(".","").isdigit() and float(r.yb)>1700 else None,"pname":str(r.pname or "").title() if isinstance(r.pname,str) else "","mkt":int(tv) if pd.notna(tv) else None,"sold":dt,"price":None})
