@@ -22,6 +22,7 @@ jobs:
       - run: pip install requests pandas
       - run: python3 nj_universe.py
       - run: |
+          python3 changes.py || true
           python3 status.py || true
           git config user.name "buyer-finder-bot"; git config user.email "bot@conwaypropertyadvisors.com"
           git add data.json site && git commit -m "New Jersey universe $(date -u +%F)" || echo "no changes"; for i in 1 2 3 4 5 6; do git -c merge.renames=false -c diff.renames=false pull --rebase -X theirs && git push && break || sleep 20; done

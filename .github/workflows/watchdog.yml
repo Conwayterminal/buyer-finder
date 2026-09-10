@@ -1,0 +1,48 @@
+name: Watchdog (stale markets)
+on:
+  schedule:
+    - cron: '0 6 * * *'   # daily
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Find stale markets and re-run their jobs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 status.py
+          python3 - << 'PY' > stale.txt
+          import json
+          s=json.load(open("site/status.json"))["markets"]
+          M={"NY":"daily.yml","NYS":"nys.yml","NJ":"nj.yml","CT":"ct.yml","MA":"ma.yml","FL":"fl.yml","PA":"pa.yml","TX":"tx.yml","CA":"ca.yml","IL":"il.yml","WA":"wa.yml"}
+          seen=set()
+          for st,v in s.items():
+              if v["stale"]:
+                  wf=M.get(st,"states.yml")
+                  if wf not in seen: seen.add(wf); print(wf)
+          PY
+          for wf in $(cat stale.txt); do echo "re-running $wf"; gh workflow run $wf --ref main || true; done
+          echo "stale jobs re-run: $(wc -l < stale.txt)"
+      - name: Report failed runs in the last day
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh run list --limit 60 --json name,conclusion,createdAt,url --jq '.[] | select(.conclusion=="failure") | "\(.createdAt[:10]) FAILED \(.name) \(.url)"' | tee failures.txt || true
+          python3 - << 'PY'
+          import json,time,os
+          s=json.load(open("site/status.json"))
+          fails=open("failures.txt").read().strip().splitlines() if os.path.exists("failures.txt") else []
+          s["watchdog"]={"checked":time.strftime("%Y-%m-%d %H:%M UTC",time.gmtime()),"failed_runs_24h":fails[:20]}
+          json.dump(s,open("site/status.json","w"),indent=0)
+          PY
+          git config user.name "buyer-finder-bot"; git config user.email "bot@conwaypropertyadvisors.com"
+          git add site/status.json && git commit -m "watchdog $(date -u +%F)" || true
+          for i in 1 2 3 4 5; do git -c merge.renames=false -c diff.renames=false pull --rebase -X theirs && git push && break || sleep 15; done
