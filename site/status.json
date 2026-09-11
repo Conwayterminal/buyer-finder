@@ -1,5 +1,5 @@
 {
-"generated": "2026-09-11 03:47 UTC",
+"generated": "2026-09-11 06:13 UTC",
 "markets": {
 "AZ": {
 "props": 19855,
@@ -16,7 +16,7 @@
 "CO": {
 "props": 19230,
 "deals": 4405,
-"refreshed": "",
+"refreshed": "2026-09-11",
 "stale": false
 },
 "CT": {
@@ -130,12 +130,19 @@
 "WI": {
 "props": 7216,
 "deals": 0,
-"refreshed": "",
+"refreshed": "2026-09-11",
 "stale": false
 }
 },
 "totals": {
-"props": 3171394,
+"props": 3178610,
 "deals": 556535
+},
+"watchdog": {
+"checked": "2026-09-11 06:13 UTC",
+"failed_runs_24h": [
+"2026-09-11 FAILED Wisconsin (Milwaukee) https://github.com/Conwayterminal/buyer-finder/actions/runs/34558574177",
+"2026-09-10 FAILED Connecticut statewide https://github.com/Conwayterminal/buyer-finder/actions/runs/34427290460"
+]
 }
 }
