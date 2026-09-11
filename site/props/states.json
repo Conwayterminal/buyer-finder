@@ -428,5 +428,15 @@
 "props": 19855,
 "deals": 0,
 "note": "Pima County (Tucson): owner, mailing, use, full cash value, last recording date. Maricopa (Phoenix) to follow from the assessor download."
+},
+"WI": {
+"name": "Wisconsin (Milwaukee)",
+"areaLabel": "City",
+"areas": [
+"Milwaukee"
+],
+"props": 7216,
+"deals": 0,
+"note": "City of Milwaukee master property file: owner, mailing, class, units, building area, year built, zoning, assessed value, last conveyance date and fee."
 }
 }
