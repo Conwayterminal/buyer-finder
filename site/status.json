@@ -1,5 +1,5 @@
 {
-"generated": "2026-09-11 03:33 UTC",
+"generated": "2026-09-11 03:47 UTC",
 "markets": {
 "AZ": {
 "props": 19855,
@@ -13,6 +13,12 @@
 "refreshed": "2026-09-11",
 "stale": false
 },
+"CO": {
+"props": 19230,
+"deals": 4405,
+"refreshed": "",
+"stale": false
+},
 "CT": {
 "props": 127708,
 "deals": 29428,
@@ -20,8 +26,8 @@
 "stale": false
 },
 "DC": {
-"props": 21274,
-"deals": 3454,
+"props": 21251,
+"deals": 3440,
 "refreshed": "2026-09-11",
 "stale": false
 },
@@ -57,7 +63,7 @@
 },
 "MI": {
 "props": 37366,
-"deals": 6938,
+"deals": 6979,
 "refreshed": "2026-09-11",
 "stale": false
 },
@@ -93,7 +99,7 @@
 },
 "OH": {
 "props": 67176,
-"deals": 12882,
+"deals": 12894,
 "refreshed": "2026-09-11",
 "stale": false
 },
@@ -129,7 +135,7 @@
 }
 },
 "totals": {
-"props": 3159403,
-"deals": 552091
+"props": 3171394,
+"deals": 556535
 }
 }

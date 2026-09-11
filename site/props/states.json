@@ -5,8 +5,8 @@
 "areas": [
 "District Of Columbia"
 ],
-"props": 21274,
-"deals": 3454,
+"props": 21251,
+"deals": 3440,
 "note": "DC lots with owner, care-of, use, assessed value, last sale date and price."
 },
 "VT": {
@@ -386,7 +386,7 @@
 "Franklin"
 ],
 "props": 67176,
-"deals": 12882,
+"deals": 12894,
 "note": "Cuyahoga (Cleveland) and Franklin (Columbus) counties: owner, mailing, use, sale date and price, values."
 },
 "MI": {
@@ -396,7 +396,7 @@
 "Detroit"
 ],
 "props": 37366,
-"deals": 6938,
+"deals": 6979,
 "note": "Detroit: taxpayer of record, mailing, class, use, zoning, SF, year built, sale date and price, assessed values."
 },
 "IL": {
@@ -429,14 +429,14 @@
 "deals": 0,
 "note": "Pima County (Tucson): owner, mailing, use, full cash value, last recording date. Maricopa (Phoenix) to follow from the assessor download."
 },
-"WI": {
-"name": "Wisconsin (Milwaukee)",
-"areaLabel": "City",
+"CO": {
+"name": "Colorado (Denver)",
+"areaLabel": "County",
 "areas": [
-"Milwaukee"
+"Denver"
 ],
-"props": 7216,
-"deals": 0,
-"note": "City of Milwaukee master property file: owner, mailing, class, units, building area, year built, zoning, assessed value, last conveyance date and fee."
+"props": 19230,
+"deals": 4405,
+"note": "Denver: owner, mailing, class, zoning, commercial gross/net area, year built, units, appraised and assessed values, last sale date and price."
 }
 }
