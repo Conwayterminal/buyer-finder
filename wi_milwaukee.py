@@ -5,7 +5,7 @@ import os, io, csv, re, json, time, requests
 HERE=os.path.dirname(os.path.abspath(__file__)); os.chdir(HERE)
 URL="https://data.milwaukee.gov/dataset/562ab824-48a5-42cd-b714-87e205e489ba/resource/0a2c7f31-cd15-4151-8222-09dd57d5f16d/download/mprop.csv"
 r=requests.get(URL,timeout=600); r.raise_for_status()
-rd=csv.DictReader(io.StringIO(r.content.decode("latin1")))
+rd=csv.DictReader(io.StringIO(r.content.decode("latin1").replace("\r\n","\n").replace("\r","\n"),newline=""))
 ent=re.compile(r"\b(LLC|L\.?L\.?C|LP|LTD|CORP|INC|TRUST|TR\b|ASSOC|PARTNERS|HOLDINGS|REALTY|PROPERTIES|GROUP|CO\b|COMPANY|LLP|BANK)\b",re.I)
 def num(x):
     try: return float(x)
