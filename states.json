@@ -590,5 +590,70 @@
     "type": "Retail / commercial"
    }
   ]
+ },
+ "CO": {
+  "name": "Colorado (Denver)",
+  "source": "City and County of Denver assessor parcels",
+  "area_label": "County",
+  "note": "Denver: owner, mailing, class, zoning, commercial gross/net area, year built, units, appraised and assessed values, last sale date and price.",
+  "sources": [
+   {
+    "url": "https://services1.arcgis.com/zdB7qR0BtYrg0Xpl/arcgis/rest/services/ODC_PROP_PARCELS_A/FeatureServer/245",
+    "page": 2000,
+    "where": "PROP_CLASS LIKE '2%' OR PROP_CLASS LIKE '3%' OR D_CLASS_CN LIKE 'RESIDENTIAL-%UNITS%' OR D_CLASS_CN LIKE '%APART%' OR D_CLASS_CN LIKE 'VACANT LAND%COMM%' OR D_CLASS_CN LIKE 'VACANT LAND%INDUST%'",
+    "fields": {
+     "id": "SCHEDNUM",
+     "owner": "OWNER_NAME",
+     "mail": "OWNER_ADDRESS_LINE1",
+     "mailcity": "OWNER_CITY",
+     "mailstate": "OWNER_STATE",
+     "addr": "SITUS_ADDRESS_LINE1",
+     "town": "SITUS_CITY",
+     "zip": "SITUS_ZIP",
+     "use": "PROP_CLASS",
+     "usedesc": "D_CLASS_CN",
+     "mkt": "APPRAISED_TOTAL_VALUE",
+     "lot": "LAND_AREA",
+     "sf": "COM_GROSS_AREA",
+     "yb": "COM_ORIG_YEAR_BUILT",
+     "units": "TOT_UNITS",
+     "zone": "ZONE_10",
+     "sold": "SALE_DATE",
+     "price": "SALE_PRICE",
+     "book": "RECEPTION_NUM"
+    },
+    "area_default": "Denver"
+   }
+  ],
+  "classify": [
+   {
+    "regex": "UNITS|APART|MULTI",
+    "type": "Multifamily 5+ units"
+   },
+   {
+    "regex": "INDUSTRIAL|WAREHOUSE",
+    "type": "Industrial"
+   },
+   {
+    "regex": "OFFICE",
+    "type": "Office"
+   },
+   {
+    "regex": "HOTEL|MOTEL",
+    "type": "Hotel"
+   },
+   {
+    "regex": "VACANT",
+    "type": "Vacant land / development"
+   },
+   {
+    "regex": "PARKING|GARAGE",
+    "type": "Garage / parking"
+   },
+   {
+    "regex": ".",
+    "type": "Retail / commercial"
+   }
+  ]
  }
 }
