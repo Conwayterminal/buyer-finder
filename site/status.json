@@ -1,5 +1,5 @@
 {
-"generated": "2026-09-12 20:23 UTC",
+"generated": "2026-09-13 06:17 UTC",
 "markets": {
 "AZ": {
 "props": 19855,
@@ -137,5 +137,12 @@
 "totals": {
 "props": 3178604,
 "deals": 556539
+},
+"watchdog": {
+"checked": "2026-09-13 06:17 UTC",
+"failed_runs_24h": [
+"2026-09-11 FAILED Wisconsin (Milwaukee) https://github.com/Conwayterminal/buyer-finder/actions/runs/34558574177",
+"2026-09-10 FAILED Connecticut statewide https://github.com/Conwayterminal/buyer-finder/actions/runs/34427290460"
+]
 }
 }
