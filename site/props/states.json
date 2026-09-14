@@ -438,5 +438,15 @@
 "props": 19230,
 "deals": 4405,
 "note": "Denver: owner, mailing, class, zoning, commercial gross/net area, year built, units, appraised and assessed values, last sale date and price."
+},
+"WI": {
+"name": "Wisconsin (Milwaukee)",
+"areaLabel": "City",
+"areas": [
+"Milwaukee"
+],
+"props": 7213,
+"deals": 0,
+"note": "City of Milwaukee master property file: owner, mailing, class, units, building area, year built, zoning, assessed value, last conveyance date and fee."
 }
 }
