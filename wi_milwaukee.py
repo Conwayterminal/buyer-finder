@@ -40,15 +40,15 @@ for x in rows:
     lat,lng=g
     own=" ".join(v for v in [(x.get("OWNER_NAME_1") or "").strip(),(x.get("OWNER_NAME_2") or "").strip()] if v).title()
     addr=" ".join(v for v in [(x.get("HOUSE_NR_LO") or "").strip(),(x.get("SDIR") or "").strip(),(x.get("STREET") or "").strip(),(x.get("STTYPE") or "").strip()] if v).title()
-    cd=(x.get("CONVEY_DATE") or "").strip(); sold=f"{cd[:4]}-{cd[4:6]}-{cd[6:8]}" if len(cd)==8 else None
+    cd=(x.get("CONVEY_DATE") or "").strip(); sold=cd[:10] if re.match(r"\d{4}-\d{2}-\d{2}",cd) else (f"{cd[:4]}-{cd[4:6]}-{cd[6:8]}" if len(cd)==8 and cd.isdigit() else None)
     if sold and (sold>time.strftime("%Y-%m-%d") or sold<"1900-01-01"): sold=None
-    price=num(x.get("CONVEY_FEE")); bt=(x.get("BLDG_TYPE") or "").strip().upper()
+    fee=num(x.get("CONVEY_FEE")); price=round(fee/0.003) if fee and fee>0 else None; bt=(x.get("BLDG_TYPE") or "").strip().upper()
     t="Multifamily 5+ units" if (cls=="1" or "APART" in bt or (units and units>=5 and cls=="2")) else ("Industrial" if cls=="3" or "WAREHOUSE" in bt or "MANUF" in bt else ("Office" if "OFFICE" in bt else ("Hotel" if "HOTEL" in bt or "MOTEL" in bt else ("Vacant land / development" if "VACANT" in lu.upper() or not bt else "Retail / commercial"))))
     p={"id":x.get("TAXKEY"),"county":"Milwaukee","town":"Milwaukee","addr":addr or "Address not listed","lat":round(lat,5),"lng":round(lng,5),"type":t,"uc":cls,"ucd":bt or lu,"owner":own[:100],"mail":", ".join(v for v in [(x.get("OWNER_MAIL_ADDR") or "").strip().title(),(x.get("OWNER_CITY_STATE") or "").strip().title()] if v)[:120],"llc":bool(ent.search(own)),
-       "units":int(units) if units else None,"sf":int(num(x.get("BLDG_AREA")) or 0) or None,"stories":x.get("NR_STORIES"),"yb":int(num(x.get("YR_BUILT")) or 0) or None,"lot":int(num(x.get("LOT_AREA")) or 0) or None,"zone":(x.get("ZONING") or "").strip(),"mkt":int(num(x.get("C_A_TOTAL")) or 0) or None,"sold":sold,"price":int(price) if price else None,"nbhd":x.get("NEIGHBORHOOD"),"viol":1 if (x.get("BI_VIOL") or "").strip() not in ("","N","0") else 0,"delq":(x.get("TAX_DELQ") or "").strip() not in ("","N","0"),"zip":str(x.get("GEO_ZIP_CODE") or "")[:5]}
+       "units":int(units) if units else None,"sf":int(num(x.get("BLDG_AREA")) or 0) or None,"stories":x.get("NR_STORIES"),"yb":int(num(x.get("YR_BUILT")) or 0) or None,"lot":int(num(x.get("LOT_AREA")) or 0) or None,"zone":(x.get("ZONING") or "").strip(),"mkt":int(num(x.get("C_A_TOTAL")) or 0) or None,"sold":sold,"price":int(price) if price else None,"nbhd":x.get("NEIGHBORHOOD"),"viol":1 if (x.get("BI_VIOL") or "").strip() not in ("","N","0","XXXX") else 0,"delq":(x.get("TAX_DELQ") or "").strip() not in ("","N","0","99999"),"zip":str(x.get("GEO_ZIP_CODE") or "")[:5]}
     props.append(p)
     if sold and sold>="2020-09-01" and price and price>0:
-        deals.append([sold,"Milwaukee","Milwaukee",p["addr"],t,cls,p["units"],p["sf"],int(price),1,p["lat"],p["lng"],own[:150],own[:150],"Owner of record after conveyance (Milwaukee MPROP)"+(" - LLC, research" if p["llc"] else ""),"",p["mail"],"","",p["yb"],p["zone"],p["lot"],"Taxkey "+str(p["id"]),None,None,None,"WI",None,None,None,None,p["mkt"]][:n])
+        deals.append([sold,"Milwaukee","Milwaukee",p["addr"],t,cls,p["units"],p["sf"],int(price),1,p["lat"],p["lng"],own[:150],own[:150],"Owner of record after conveyance (Milwaukee MPROP) - price implied from transfer fee"+(" - LLC, research" if p["llc"] else ""),"",p["mail"],"","",p["yb"],p["zone"],p["lot"],"Taxkey "+str(p["id"]),None,None,None,"WI",None,None,None,None,p["mkt"]][:n])
 os.makedirs("site/props",exist_ok=True)
 json.dump(props,open("site/props/WI_Milwaukee.json","w"),separators=(",",":"),allow_nan=False)
 json.dump({"cols":D["cols"],"rows":deals,"pulled":time.strftime("%Y-%m-%d")},open("site/data/WI.json","w"),separators=(",",":"))
