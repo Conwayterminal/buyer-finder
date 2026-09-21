@@ -1,145 +1,141 @@
 {
-"generated": "2026-09-21 06:15 UTC",
+"generated": "2026-09-21 11:29 UTC",
 "markets": {
 "AZ": {
 "props": 19854,
 "deals": 0,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "CA": {
 "props": 209343,
 "deals": 43232,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "CO": {
 "props": 19232,
 "deals": 4426,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "CT": {
 "props": 127708,
 "deals": 29428,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "DC": {
 "props": 21204,
 "deals": 3420,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "FL": {
 "props": 602806,
 "deals": 66063,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "GA": {
 "props": 23524,
 "deals": 0,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "IL": {
 "props": 169754,
 "deals": 36008,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "IN": {
 "props": 20863,
 "deals": 0,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "MA": {
 "props": 229032,
 "deals": 56796,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "MI": {
 "props": 37366,
 "deals": 6987,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "MN": {
 "props": 48006,
 "deals": 0,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "NC": {
 "props": 209050,
 "deals": 0,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "NJ": {
 "props": 355763,
 "deals": 133873,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "NY": {
 "props": 269761,
 "deals": 41323,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "NYS": {
 "props": 269745,
 "deals": 0,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "OH": {
 "props": 67181,
 "deals": 12943,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "PA": {
 "props": 111617,
 "deals": 26314,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "TX": {
 "props": 302749,
 "deals": 90096,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "VT": {
 "props": 26521,
 "deals": 0,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "WA": {
 "props": 32665,
 "deals": 6465,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 },
 "WI": {
 "props": 7214,
 "deals": 1913,
-"refreshed": "2026-09-20",
+"refreshed": "2026-09-21",
 "stale": false
 }
 },
 "totals": {
 "props": 3180958,
 "deals": 559287
-},
-"watchdog": {
-"checked": "2026-09-21 06:15 UTC",
-"failed_runs_24h": []
 }
 }
