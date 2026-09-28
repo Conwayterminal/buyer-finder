@@ -1,5 +1,5 @@
 {
-"generated": "2026-09-28 17:25 UTC",
+"generated": "2026-09-28 18:31 UTC",
 "markets": {
 "AZ": {
 "props": 19854,
@@ -92,7 +92,7 @@
 "stale": false
 },
 "NYS": {
-"props": 269745,
+"props": 269959,
 "deals": 0,
 "refreshed": "2026-09-28",
 "stale": false
@@ -135,7 +135,7 @@
 }
 },
 "totals": {
-"props": 3187391,
+"props": 3187605,
 "deals": 561143
 }
 }
