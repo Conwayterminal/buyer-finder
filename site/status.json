@@ -1,5 +1,5 @@
 {
-"generated": "2026-09-28 21:18 UTC",
+"generated": "2026-09-29 06:14 UTC",
 "markets": {
 "AZ": {
 "props": 19854,
@@ -137,5 +137,9 @@
 "totals": {
 "props": 3187618,
 "deals": 561223
+},
+"watchdog": {
+"checked": "2026-09-29 06:14 UTC",
+"failed_runs_24h": []
 }
 }
