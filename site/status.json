@@ -1,136 +1,136 @@
 {
-"generated": "2026-10-08 12:51 UTC",
+"generated": "2026-10-09 12:36 UTC",
 "markets": {
 "AZ": {
 "props": 19854,
 "deals": 0,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "CA": {
 "props": 209331,
 "deals": 43242,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "CO": {
 "props": 19249,
 "deals": 4487,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "CT": {
 "props": 127708,
 "deals": 29428,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "DC": {
 "props": 21114,
 "deals": 3401,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "FL": {
 "props": 602806,
 "deals": 66063,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "GA": {
 "props": 23524,
 "deals": 0,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "IL": {
 "props": 169287,
 "deals": 36021,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "IN": {
 "props": 20862,
 "deals": 0,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "MA": {
 "props": 229346,
 "deals": 57579,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "MI": {
 "props": 37365,
 "deals": 7053,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "MN": {
 "props": 48006,
 "deals": 0,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "NC": {
 "props": 209050,
 "deals": 0,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "NJ": {
 "props": 355763,
 "deals": 133873,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "NY": {
 "props": 269761,
 "deals": 41323,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "NYS": {
 "props": 269959,
 "deals": 0,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "OH": {
 "props": 73988,
 "deals": 14548,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "PA": {
 "props": 111549,
 "deals": 26426,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "TX": {
 "props": 302550,
 "deals": 90355,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "VT": {
 "props": 26525,
 "deals": 0,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "WA": {
 "props": 32674,
 "deals": 6600,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 },
 "WI": {
 "props": 7213,
 "deals": 1913,
-"refreshed": "2026-10-07",
+"refreshed": "2026-10-08",
 "stale": false
 }
 },
@@ -139,7 +139,7 @@
 "deals": 562312
 },
 "watchdog": {
-"checked": "2026-10-08 12:51 UTC",
+"checked": "2026-10-09 12:36 UTC",
 "failed_runs_24h": [
 "2026-10-05 FAILED pages build and deployment https://github.com/Conwayterminal/buyer-finder/actions/runs/37369896560"
 ]
