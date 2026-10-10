@@ -5,8 +5,8 @@
 "areas": [
 "District Of Columbia"
 ],
-"props": 21114,
-"deals": 3401,
+"props": 21077,
+"deals": 3393,
 "note": "DC lots with owner, care-of, use, assessed value, last sale date and price."
 },
 "VT": {
@@ -271,7 +271,7 @@
 "Woodstock",
 "Worcester"
 ],
-"props": 26525,
+"props": 26541,
 "deals": 0,
 "note": "Vermont grand list: owner, mailing, category, listed value; no sale dates in the statewide layer."
 },
@@ -374,7 +374,7 @@
 "areas": [
 "Marion"
 ],
-"props": 20862,
+"props": 20863,
 "deals": 0,
 "note": "Marion County (Indianapolis): owner, mailing, property class, assessed values."
 },
@@ -385,8 +385,8 @@
 "Cuyahoga",
 "Franklin"
 ],
-"props": 73988,
-"deals": 14548,
+"props": 67084,
+"deals": 13004,
 "note": "Cuyahoga (Cleveland) and Franklin (Columbus) counties: owner, mailing, use, sale date and price, values."
 },
 "MI": {
@@ -395,8 +395,8 @@
 "areas": [
 "Detroit"
 ],
-"props": 37365,
-"deals": 7053,
+"props": 37363,
+"deals": 7062,
 "note": "Detroit: taxpayer of record, mailing, class, use, zoning, SF, year built, sale date and price, assessed values."
 },
 "IL": {
@@ -435,8 +435,8 @@
 "areas": [
 "Denver"
 ],
-"props": 19249,
-"deals": 4487,
+"props": 19250,
+"deals": 4497,
 "note": "Denver: owner, mailing, class, zoning, commercial gross/net area, year built, units, appraised and assessed values, last sale date and price."
 },
 "WI": {
