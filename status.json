@@ -1,0 +1,141 @@
+{
+"generated": "2026-10-17 13:37 UTC",
+"markets": {
+"AZ": {
+"props": 19854,
+"deals": 0,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"CA": {
+"props": 209324,
+"deals": 43235,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"CO": {
+"props": 19250,
+"deals": 4497,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"CT": {
+"props": 95536,
+"deals": 21307,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"DC": {
+"props": 21077,
+"deals": 3393,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"FL": {
+"props": 602806,
+"deals": 66063,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"GA": {
+"props": 23524,
+"deals": 0,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"IL": {
+"props": 169287,
+"deals": 36021,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"IN": {
+"props": 20863,
+"deals": 0,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"MA": {
+"props": 229346,
+"deals": 57579,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"MI": {
+"props": 37363,
+"deals": 7062,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"MN": {
+"props": 48006,
+"deals": 0,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"NC": {
+"props": 209050,
+"deals": 0,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"NJ": {
+"props": 355763,
+"deals": 133873,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"NY": {
+"props": 269761,
+"deals": 41828,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"NYS": {
+"props": 269959,
+"deals": 0,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"OH": {
+"props": 67084,
+"deals": 13004,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"PA": {
+"props": 111477,
+"deals": 26562,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"TX": {
+"props": 302474,
+"deals": 90424,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"VT": {
+"props": 26541,
+"deals": 0,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"WA": {
+"props": 32682,
+"deals": 6605,
+"refreshed": "2026-10-17",
+"stale": false
+},
+"WI": {
+"props": 7212,
+"deals": 1913,
+"refreshed": "2026-10-17",
+"stale": false
+}
+},
+"totals": {
+"props": 3148239,
+"deals": 553366
+}
+}
