@@ -1,147 +1,141 @@
 {
-"generated": "2026-10-24 10:19 UTC",
+"generated": "2026-10-24 22:21 UTC",
 "markets": {
 "AZ": {
-"props": 19848,
+"props": 19833,
 "deals": 0,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "CA": {
 "props": 209315,
 "deals": 43233,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "CO": {
-"props": 19259,
-"deals": 4502,
-"refreshed": "2026-10-23",
+"props": 19255,
+"deals": 4514,
+"refreshed": "2026-10-24",
 "stale": false
 },
 "CT": {
 "props": 127708,
 "deals": 29428,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "DC": {
-"props": 21047,
-"deals": 3381,
-"refreshed": "2026-10-23",
+"props": 21012,
+"deals": 3387,
+"refreshed": "2026-10-24",
 "stale": false
 },
 "FL": {
 "props": 602806,
 "deals": 66063,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "GA": {
 "props": 23524,
 "deals": 0,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "IL": {
 "props": 169205,
 "deals": 35992,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "IN": {
-"props": 20861,
+"props": 20863,
 "deals": 0,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "MA": {
 "props": 229346,
 "deals": 57579,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "MI": {
 "props": 37365,
-"deals": 7125,
-"refreshed": "2026-10-23",
+"deals": 7136,
+"refreshed": "2026-10-24",
 "stale": false
 },
 "MN": {
 "props": 48006,
 "deals": 0,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "NC": {
 "props": 209050,
 "deals": 0,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "NJ": {
 "props": 355763,
 "deals": 133873,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "NY": {
 "props": 269761,
 "deals": 41323,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "NYS": {
 "props": 269959,
 "deals": 0,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "OH": {
-"props": 67085,
-"deals": 13025,
-"refreshed": "2026-10-23",
+"props": 74005,
+"deals": 14636,
+"refreshed": "2026-10-24",
 "stale": false
 },
 "PA": {
 "props": 111448,
 "deals": 26617,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "TX": {
 "props": 302412,
 "deals": 90414,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "VT": {
-"props": 26530,
+"props": 26529,
 "deals": 0,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "WA": {
 "props": 32682,
 "deals": 6617,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 },
 "WI": {
 "props": 7212,
 "deals": 1917,
-"refreshed": "2026-10-23",
+"refreshed": "2026-10-24",
 "stale": false
 }
 },
 "totals": {
-"props": 3180192,
-"deals": 561089
-},
-"watchdog": {
-"checked": "2026-10-24 10:19 UTC",
-"failed_runs_24h": [
-"2026-10-15 FAILED Florida Sunbiz officers https://github.com/Conwayterminal/buyer-finder/actions/runs/38733670627"
-]
+"props": 3187059,
+"deals": 562729
 }
 }
