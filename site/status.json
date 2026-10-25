@@ -1,5 +1,5 @@
 {
-"generated": "2026-10-24 22:21 UTC",
+"generated": "2026-10-25 10:46 UTC",
 "markets": {
 "AZ": {
 "props": 19833,
@@ -137,5 +137,11 @@
 "totals": {
 "props": 3187059,
 "deals": 562729
+},
+"watchdog": {
+"checked": "2026-10-25 10:46 UTC",
+"failed_runs_24h": [
+"2026-10-15 FAILED Florida Sunbiz officers https://github.com/Conwayterminal/buyer-finder/actions/runs/38733670627"
+]
 }
 }
