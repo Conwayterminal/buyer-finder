@@ -5,8 +5,8 @@
 "areas": [
 "District Of Columbia"
 ],
-"props": 20983,
-"deals": 3386,
+"props": 20959,
+"deals": 3370,
 "note": "DC lots with owner, care-of, use, assessed value, last sale date and price."
 },
 "VT": {
@@ -271,7 +271,7 @@
 "Woodstock",
 "Worcester"
 ],
-"props": 26531,
+"props": 26614,
 "deals": 0,
 "note": "Vermont grand list: owner, mailing, category, listed value; no sale dates in the statewide layer."
 },
@@ -374,7 +374,7 @@
 "areas": [
 "Marion"
 ],
-"props": 20863,
+"props": 20862,
 "deals": 0,
 "note": "Marion County (Indianapolis): owner, mailing, property class, assessed values."
 },
@@ -385,8 +385,8 @@
 "Cuyahoga",
 "Franklin"
 ],
-"props": 67203,
-"deals": 13061,
+"props": 67140,
+"deals": 13088,
 "note": "Cuyahoga (Cleveland) and Franklin (Columbus) counties: owner, mailing, use, sale date and price, values."
 },
 "MI": {
@@ -395,8 +395,8 @@
 "areas": [
 "Detroit"
 ],
-"props": 37365,
-"deals": 7148,
+"props": 37369,
+"deals": 7198,
 "note": "Detroit: taxpayer of record, mailing, class, use, zoning, SF, year built, sale date and price, assessed values."
 },
 "IL": {
@@ -425,7 +425,7 @@
 "areas": [
 "Pima"
 ],
-"props": 19825,
+"props": 19821,
 "deals": 0,
 "note": "Pima County (Tucson): owner, mailing, use, full cash value, last recording date. Maricopa (Phoenix) to follow from the assessor download."
 },
@@ -436,7 +436,7 @@
 "Denver"
 ],
 "props": 19257,
-"deals": 4527,
+"deals": 4546,
 "note": "Denver: owner, mailing, class, zoning, commercial gross/net area, year built, units, appraised and assessed values, last sale date and price."
 },
 "WI": {
