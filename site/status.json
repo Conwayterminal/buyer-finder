@@ -1,5 +1,5 @@
 {
-"generated": "2026-11-10 03:24 UTC",
+"generated": "2026-11-10 14:22 UTC",
 "markets": {
 "AZ": {
 "props": 19821,
@@ -137,5 +137,14 @@
 "totals": {
 "props": 3179375,
 "deals": 561990
+},
+"watchdog": {
+"checked": "2026-11-10 14:22 UTC",
+"failed_runs_24h": [
+"2026-11-10 FAILED pages build and deployment https://github.com/Conwayterminal/buyer-finder/actions/runs/42749463302",
+"2026-11-10 FAILED pages build and deployment https://github.com/Conwayterminal/buyer-finder/actions/runs/42739565442",
+"2026-11-10 FAILED pages build and deployment https://github.com/Conwayterminal/buyer-finder/actions/runs/42736650245",
+"2026-11-09 FAILED pages build and deployment https://github.com/Conwayterminal/buyer-finder/actions/runs/42714335673"
+]
 }
 }
