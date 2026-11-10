@@ -1,5 +1,5 @@
 {
-"generated": "2026-11-10 01:57 UTC",
+"generated": "2026-11-10 02:48 UTC",
 "markets": {
 "AZ": {
 "props": 19821,
@@ -122,8 +122,8 @@
 "stale": false
 },
 "WA": {
-"props": 32685,
-"deals": 6677,
+"props": 32265,
+"deals": 6610,
 "refreshed": "2026-11-10",
 "stale": false
 },
@@ -135,7 +135,7 @@
 }
 },
 "totals": {
-"props": 3179795,
-"deals": 562054
+"props": 3179375,
+"deals": 561987
 }
 }
