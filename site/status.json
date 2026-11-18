@@ -1,5 +1,5 @@
 {
-"generated": "2026-11-17 15:31 UTC",
+"generated": "2026-11-18 15:09 UTC",
 "markets": {
 "AZ": {
 "props": 19820,
@@ -139,7 +139,7 @@
 "deals": 562457
 },
 "watchdog": {
-"checked": "2026-11-17 15:31 UTC",
+"checked": "2026-11-18 15:09 UTC",
 "failed_runs_24h": [
 "2026-11-15 FAILED NYC DOB owner contacts (all lots) https://github.com/Conwayterminal/buyer-finder/actions/runs/43733534955",
 "2026-11-10 FAILED pages build and deployment https://github.com/Conwayterminal/buyer-finder/actions/runs/42749463302",
